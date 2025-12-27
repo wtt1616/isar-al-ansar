@@ -235,7 +235,7 @@ export default function KhairatDaftarPage() {
                 }}
               />
               <h4 className="fw-bold text-success mb-1">Surau Al-Ansar</h4>
-              <p className="text-muted mb-2"><!-- TODO: Update lokasi --></p>
+              <p className="text-muted mb-2">{/* TODO: Update lokasi */}</p>
               <h5 className="text-dark">Borang Keahlian Khairat Kematian 2025-2026</h5>
             </div>
 

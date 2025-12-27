@@ -131,7 +131,7 @@ export default function InfaqPage() {
               >
                 <small className="text-muted">
                   <i className="bi bi-geo-alt me-1"></i>
-                  <!-- TODO: Update lokasi Al-Ansar -->
+                  {/* TODO: Update lokasi Al-Ansar */}
                 </small>
               </div>
             </div>
