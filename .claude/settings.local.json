@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm run dev:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(npm run build:*)",
+      "Bash(find:*)",
+      "Bash(mysqldump:*)",
+      "Bash(isar_db_production.sql)",
+      "Bash(mysql:*)",
+      "Bash(ssh -o StrictHostKeyChecking=no -p 8288 root@117.53.155.172 \"pkill -f ''next-server'' || true; sleep 2; ss -tlnp | grep 3000\")",
+      "Bash(ssh -o StrictHostKeyChecking=no -p 8288 root@117.53.155.172 \"pkill -9 -f next-server; pkill -9 -f ''npm start''; sleep 2; ss -tlnp | grep 3000 || echo ''Port 3000 is now free''\")",
+      "Bash(ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -p 8288 root@117.53.155.172 \"pkill -9 -f next; sleep 1; ss -tlnp | grep 3000\")",
+      "Bash(ssh:*)",
+      "Bash(grep:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
