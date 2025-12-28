@@ -410,14 +410,14 @@ export async function sendPermohonanMajlisConfirmation(data: PermohonanMajlisDat
     .map(p => PERALATAN_LABELS[p] || p)
     .join(', ');
 
-  const message = `🕌 *SURAU AR-RAUDHAH*
+  const message = `🕌 *SURAU AL-ANSAR*
 *Permohonan Majlis Diterima*
 
 السلام عليكم ورحمة الله وبركاته
 
 Yth. *${data.nama_pemohon}*,
 
-Permohonan anda untuk mengadakan majlis di Surau Al-Islah telah *BERJAYA DITERIMA* dan sedang diproses.
+Permohonan anda untuk mengadakan majlis di Surau Al-Ansar telah *BERJAYA DITERIMA* dan sedang diproses.
 
 ━━━━━━━━━━━━━━━━━━
 📋 *SALINAN PERMOHONAN*
@@ -444,7 +444,7 @@ ${peralatanList || 'Tiada'}${data.peralatan_lain ? `\n• Lain-lain: ${data.pera
 
 ━━━━━━━━━━━━━━━━━━
 
-Pihak pengurusan Surau Al-Islah akan menghubungi anda melalui WhatsApp untuk memaklumkan status kelulusan permohonan.
+Pihak pengurusan Surau Al-Ansar akan menghubungi anda melalui WhatsApp untuk memaklumkan status kelulusan permohonan.
 
 📞 *Sebarang pertanyaan:*
 • Pengerusi: 013-645 3396
@@ -452,7 +452,7 @@ Pihak pengurusan Surau Al-Islah akan menghubungi anda melalui WhatsApp untuk mem
 • Siak: 012-974 3858
 
 جزاك الله خيرا
-_Sistem iSAR - Surau Al-Islah_`;
+_Sistem iSAR - Surau Al-Ansar_`;
 
   const result = await sendTwilioMessage(phoneNumber, message);
 
@@ -487,14 +487,14 @@ export async function sendPermohonanStatusUpdate(
   let message: string;
 
   if (status === 'approved') {
-    message = `🕌 *SURAU AR-RAUDHAH*
+    message = `🕌 *SURAU AL-ANSAR*
 *Permohonan Majlis DILULUSKAN*
 
 السلام عليكم ورحمة الله وبركاته
 
 Yth. *${data.nama_pemohon}*,
 
-Alhamdulillah, permohonan anda untuk mengadakan majlis di Surau Al-Islah telah *DILULUSKAN* ✅
+Alhamdulillah, permohonan anda untuk mengadakan majlis di Surau Al-Ansar telah *DILULUSKAN* ✅
 
 ━━━━━━━━━━━━━━━━━━
 📋 *BUTIRAN MAJLIS*
@@ -520,16 +520,16 @@ Alhamdulillah, permohonan anda untuk mengadakan majlis di Surau Al-Islah telah *
 Terima kasih atas kerjasama anda.
 
 جزاك الله خيرا
-_Sistem iSAR - Surau Al-Islah_`;
+_Sistem iSAR - Surau Al-Ansar_`;
   } else {
-    message = `🕌 *SURAU AR-RAUDHAH*
+    message = `🕌 *SURAU AL-ANSAR*
 *Permohonan Majlis TIDAK DILULUSKAN*
 
 السلام عليكم ورحمة الله وبركاته
 
 Yth. *${data.nama_pemohon}*,
 
-Dengan hormatnya dimaklumkan bahawa permohonan anda untuk mengadakan majlis di Surau Al-Islah *TIDAK DAPAT DILULUSKAN* ❌
+Dengan hormatnya dimaklumkan bahawa permohonan anda untuk mengadakan majlis di Surau Al-Ansar *TIDAK DAPAT DILULUSKAN* ❌
 
 ━━━━━━━━━━━━━━━━━━
 
@@ -551,7 +551,7 @@ Anda boleh menghubungi pihak pengurusan untuk maklumat lanjut atau membuat permo
 Mohon maaf atas sebarang kesulitan.
 
 جزاك الله خيرا
-_Sistem iSAR - Surau Al-Islah_`;
+_Sistem iSAR - Surau Al-Ansar_`;
   }
 
   const result = await sendTwilioMessage(phoneNumber, message);
@@ -579,14 +579,14 @@ export async function sendFeedbackReplyWhatsApp(
     ? originalMessage.substring(0, 200) + '...'
     : originalMessage;
 
-  const message = `🕌 *SURAU AR-RAUDHAH*
+  const message = `🕌 *SURAU AL-ANSAR*
 *Jawapan Maklum Balas*
 
 السلام عليكم ورحمة الله وبركاته
 
 Yth. *${nama}*,
 
-Berikut adalah jawapan daripada pihak pengurusan Surau Al-Islah:
+Berikut adalah jawapan daripada pihak pengurusan Surau Al-Ansar:
 
 ━━━━━━━━━━━━━━━━━━
 📝 *Maklum Balas Asal:*
@@ -600,7 +600,7 @@ ${adminReply}
 Sekiranya anda mempunyai sebarang pertanyaan lanjut, sila hantar maklum balas baru.
 
 جزاك الله خيرا
-_Sistem iSAR - Surau Al-Islah_`;
+_Sistem iSAR - Surau Al-Ansar_`;
 
   const result = await sendTwilioMessage(phoneNumber, message);
 
@@ -626,14 +626,14 @@ export async function sendFeedbackConfirmationWhatsApp(
     ? mesej.substring(0, 200) + '...'
     : mesej;
 
-  const message = `🕌 *SURAU AR-RAUDHAH*
+  const message = `🕌 *SURAU AL-ANSAR*
 *Maklum Balas Diterima*
 
 السلام عليكم ورحمة الله وبركاته
 
 Yth. *${nama}*,
 
-Terima kasih kerana menghantar maklum balas kepada Surau Al-Islah.
+Terima kasih kerana menghantar maklum balas kepada Surau Al-Ansar.
 
 ━━━━━━━━━━━━━━━━━━
 📝 *Maklum Balas Anda:*
@@ -643,7 +643,7 @@ ${truncatedMessage}
 Maklum balas anda telah diterima dan sedang diproses. Pihak pengurusan akan menghubungi anda melalui WhatsApp atau emel sekiranya terdapat sebarang maklum balas.
 
 جزاك الله خيرا
-_Sistem iSAR - Surau Al-Islah_`;
+_Sistem iSAR - Surau Al-Ansar_`;
 
   const result = await sendTwilioMessage(phoneNumber, message);
 

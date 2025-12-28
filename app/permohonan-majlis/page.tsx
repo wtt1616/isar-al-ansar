@@ -187,7 +187,7 @@ export default function PermohonanMajlisPage() {
                   <div className="d-flex justify-content-center align-items-center gap-3 mb-3">
                     <Image
                       src="/logo-surau.png"
-                      alt="Logo Surau Al-Islah"
+                      alt="Logo Surau Al-Ansar"
                       width={80}
                       height={80}
                       style={{ objectFit: 'contain' }}
@@ -196,16 +196,15 @@ export default function PermohonanMajlisPage() {
                       }}
                     />
                     <div className="text-start">
-                      <h4 className="mb-0 fw-bold" style={{ color: '#8B0000' }}>SURAU AR-RAUDHAH</h4>
+                      <h4 className="mb-0 fw-bold" style={{ color: '#8B0000' }}>SURAU AL-ANSAR</h4>
                       <small className="text-muted">
-                        Lot 41907, Jalan Impian Makmur 3,<br />
-                        Saujana Impian, 43000 Kajang, Selangor Darul Ehsan
+                        {/* TODO: Update alamat surau */}
                       </small>
                     </div>
                   </div>
                   <hr />
                   <h5 className="fw-bold text-dark mb-0">BORANG KEBENARAN MENGADAKAN MAJLIS</h5>
-                  <h5 className="fw-bold text-dark">DI SURAU AR-RAUDHAH</h5>
+                  <h5 className="fw-bold text-dark">DI SURAU AL-ANSAR</h5>
                 </div>
               </div>
 

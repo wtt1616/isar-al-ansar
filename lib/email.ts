@@ -7,7 +7,7 @@ const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587');
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
-const SMTP_FROM = process.env.SMTP_FROM || 'Surau Al-Islah <noreply@surau-arraudhah.com>';
+const SMTP_FROM = process.env.SMTP_FROM || 'Surau Al-Ansar <noreply@al-ansar.isar.my>';
 
 // Create reusable transporter
 const transporter = nodemailer.createTransport({
@@ -61,7 +61,7 @@ export async function sendFeedbackConfirmation(
   nama: string,
   mesej: string
 ): Promise<boolean> {
-  const subject = 'Maklum Balas Anda Telah Diterima - Surau Al-Islah';
+  const subject = 'Maklum Balas Anda Telah Diterima - Surau Al-Ansar';
 
   const html = `
     <!DOCTYPE html>
@@ -80,12 +80,12 @@ export async function sendFeedbackConfirmation(
     <body>
       <div class="container">
         <div class="header">
-          <h2>Surau Al-Islah</h2>
+          <h2>Surau Al-Ansar</h2>
           <p>Maklum Balas Diterima</p>
         </div>
         <div class="content">
           <p>Assalamualaikum ${nama},</p>
-          <p>Terima kasih kerana menghantar maklum balas kepada Surau Al-Islah. Maklum balas anda telah berjaya diterima dan sedang diproses oleh pihak pengurusan.</p>
+          <p>Terima kasih kerana menghantar maklum balas kepada Surau Al-Ansar. Maklum balas anda telah berjaya diterima dan sedang diproses oleh pihak pengurusan.</p>
 
           <div class="message-box">
             <strong>Maklum Balas Anda:</strong>
@@ -95,10 +95,10 @@ export async function sendFeedbackConfirmation(
           <p>Kami akan menghubungi anda melalui WhatsApp atau emel ini sekiranya terdapat sebarang maklum balas daripada pihak pengurusan.</p>
 
           <p>Jazakallahu khairan.</p>
-          <p><em>Sistem iSAR - Surau Al-Islah</em></p>
+          <p><em>Sistem iSAR - Surau Al-Ansar</em></p>
         </div>
         <div class="footer">
-          &copy; ${new Date().getFullYear()} Surau Al-Islah. Semua hak cipta terpelihara.
+          &copy; ${new Date().getFullYear()} Surau Al-Ansar. Semua hak cipta terpelihara.
         </div>
       </div>
     </body>
@@ -107,7 +107,7 @@ export async function sendFeedbackConfirmation(
 
   const text = `Assalamualaikum ${nama},
 
-Terima kasih kerana menghantar maklum balas kepada Surau Al-Islah. Maklum balas anda telah berjaya diterima dan sedang diproses oleh pihak pengurusan.
+Terima kasih kerana menghantar maklum balas kepada Surau Al-Ansar. Maklum balas anda telah berjaya diterima dan sedang diproses oleh pihak pengurusan.
 
 Maklum Balas Anda:
 ${mesej}
@@ -115,7 +115,7 @@ ${mesej}
 Kami akan menghubungi anda melalui WhatsApp atau emel ini sekiranya terdapat sebarang maklum balas daripada pihak pengurusan.
 
 Jazakallahu khairan.
-Sistem iSAR - Surau Al-Islah`;
+Sistem iSAR - Surau Al-Ansar`;
 
   return sendEmail({ to, subject, html, text });
 }
@@ -129,7 +129,7 @@ export async function sendFeedbackReplyEmail(
   originalMessage: string,
   adminReply: string
 ): Promise<boolean> {
-  const subject = 'Jawapan Daripada Surau Al-Islah';
+  const subject = 'Jawapan Daripada Surau Al-Ansar';
 
   const html = `
     <!DOCTYPE html>
@@ -149,12 +149,12 @@ export async function sendFeedbackReplyEmail(
     <body>
       <div class="container">
         <div class="header">
-          <h2>Surau Al-Islah</h2>
+          <h2>Surau Al-Ansar</h2>
           <p>Jawapan Maklum Balas</p>
         </div>
         <div class="content">
           <p>Assalamualaikum ${nama},</p>
-          <p>Berikut adalah jawapan daripada pihak pengurusan Surau Al-Islah berhubung maklum balas yang anda hantar:</p>
+          <p>Berikut adalah jawapan daripada pihak pengurusan Surau Al-Ansar berhubung maklum balas yang anda hantar:</p>
 
           <div class="message-box">
             <strong>Maklum Balas Asal Anda:</strong>
@@ -169,10 +169,10 @@ export async function sendFeedbackReplyEmail(
           <p>Sekiranya anda mempunyai sebarang pertanyaan lanjut, sila hubungi pihak pengurusan atau hantar maklum balas baru.</p>
 
           <p>Jazakallahu khairan.</p>
-          <p><em>Sistem iSAR - Surau Al-Islah</em></p>
+          <p><em>Sistem iSAR - Surau Al-Ansar</em></p>
         </div>
         <div class="footer">
-          &copy; ${new Date().getFullYear()} Surau Al-Islah. Semua hak cipta terpelihara.
+          &copy; ${new Date().getFullYear()} Surau Al-Ansar. Semua hak cipta terpelihara.
         </div>
       </div>
     </body>
@@ -181,7 +181,7 @@ export async function sendFeedbackReplyEmail(
 
   const text = `Assalamualaikum ${nama},
 
-Berikut adalah jawapan daripada pihak pengurusan Surau Al-Islah berhubung maklum balas yang anda hantar:
+Berikut adalah jawapan daripada pihak pengurusan Surau Al-Ansar berhubung maklum balas yang anda hantar:
 
 Maklum Balas Asal Anda:
 ${originalMessage}
@@ -192,7 +192,7 @@ ${adminReply}
 Sekiranya anda mempunyai sebarang pertanyaan lanjut, sila hubungi pihak pengurusan atau hantar maklum balas baru.
 
 Jazakallahu khairan.
-Sistem iSAR - Surau Al-Islah`;
+Sistem iSAR - Surau Al-Ansar`;
 
   return sendEmail({ to, subject, html, text });
 }

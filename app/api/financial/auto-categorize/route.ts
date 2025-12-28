@@ -160,14 +160,14 @@ export async function POST(request: NextRequest) {
 
         // Business Rule 2: Sumbangan Am for Fund Transfer/Transfer with no payment_details
         // Categorize as "Sumbangan Am" if:
-        // 1. customer_eft_no contains: "Fund Transfer", "Transfer", "Surau Al-Islah", or "SAR"
+        // 1. customer_eft_no contains: "Fund Transfer", "Transfer", "Surau Al-Ansar", or "SAR"
         // 2. payment_details is NULL or empty
         // 3. Transaction is penerimaan (has credit_amount)
         const customerEftNo = (transaction.customer_eft_no || '').toLowerCase();
         const hasTransferKeyword =
           customerEftNo.includes('fund transfer') ||
           customerEftNo.includes('transfer') ||
-          customerEftNo.includes('surau al-islah') ||
+          customerEftNo.includes('surau al-ansar') ||
           customerEftNo.includes('sar');
         const paymentDetailsEmpty = !transaction.payment_details || transaction.payment_details.trim() === '';
 

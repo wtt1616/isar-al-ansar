@@ -187,8 +187,8 @@ export default function LaporanPembeliTender() {
                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
               <div>
-                <h4 className="mb-0 fw-bold">SURAU AR-RAUDHAH</h4>
-                <p className="mb-0 small">Saujana Impian, Kajang</p>
+                <h4 className="mb-0 fw-bold">SURAU AL-ANSAR</h4>
+                <p className="mb-0 small">{/* TODO: Update lokasi */}</p>
               </div>
             </div>
             <hr className="my-3" />

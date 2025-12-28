@@ -137,7 +137,7 @@ export default function LaporanBulananPage() {
           <div className="text-center mb-3">
             <p className="mb-1 fw-bold">BR-KMS 018</p>
             <h5 className="fw-bold">LAPORAN KEWANGAN BULANAN DAN BERKALA {year}</h5>
-            <p className="mb-2">MASJID/SURAU: <span className="border-bottom border-dark px-5">SURAU AR-RAUDHAH</span></p>
+            <p className="mb-2">MASJID/SURAU: <span className="border-bottom border-dark px-5">SURAU AL-ANSAR</span></p>
           </div>
 
           {/* Main Table */}

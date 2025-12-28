@@ -322,7 +322,7 @@ export default function PenyesuaianBankPage() {
             </div>
 
             <div className="text-center mb-4">
-              <p className="mb-1">MASJID/SURAU: <u className="px-4">SURAU AR-RAUDHAH PRESINT 18</u></p>
+              <p className="mb-1">MASJID/SURAU: <u className="px-4">SURAU AL-ANSAR</u></p>
               <p className="mb-0">
                 <strong>PENYATA PENYESUAIAN BANK PADA</strong>{' '}
                 <u className="px-3">{BULAN_NAMES[selectedMonth - 1]} {selectedYear}</u>
