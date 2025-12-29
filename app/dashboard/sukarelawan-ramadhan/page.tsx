@@ -98,21 +98,26 @@ export default function SukarelawanRamadhanAdminPage() {
       const res = await fetch('/api/settings/sukarelawan', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           tahun_aktif: settings.sukarelawan_tahun_aktif,
           pendaftaran_aktif: settings.sukarelawan_pendaftaran_aktif
         })
       });
 
-      if (res.ok) {
+      const data = await res.json();
+
+      if (res.ok && data.success) {
         setShowSettingsModal(false);
         alert('Tetapan berjaya dikemaskini');
+        // Refresh settings
+        fetchSettings();
       } else {
-        alert('Ralat kemaskini tetapan');
+        alert('Ralat: ' + (data.error || 'Gagal kemaskini tetapan'));
       }
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('Ralat kemaskini tetapan');
+      alert('Ralat kemaskini tetapan: ' + (error as Error).message);
     } finally {
       setSettingsLoading(false);
     }

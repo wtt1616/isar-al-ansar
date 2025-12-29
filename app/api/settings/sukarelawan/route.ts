@@ -53,12 +53,16 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    console.log('PUT /api/settings/sukarelawan - Session:', session?.user?.email, 'Role:', session?.user?.role);
+
     if (!session || session.user.role !== 'admin') {
+      console.log('PUT /api/settings/sukarelawan - Unauthorized');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
     const { tahun_aktif, pendaftaran_aktif } = body;
+    console.log('PUT /api/settings/sukarelawan - Body:', { tahun_aktif, pendaftaran_aktif });
 
     if (tahun_aktif !== undefined) {
       const year = parseInt(tahun_aktif, 10);
@@ -66,24 +70,23 @@ export async function PUT(request: NextRequest) {
         return NextResponse.json({ error: 'Tahun tidak sah' }, { status: 400 });
       }
 
+      console.log('PUT /api/settings/sukarelawan - Updating tahun_aktif to:', year);
       await pool.query(
-        `INSERT INTO app_settings (setting_key, setting_value, setting_type, description, updated_by)
-         VALUES ('sukarelawan_tahun_aktif', ?, 'number', 'Tahun aktif untuk pendaftaran Sukarelawan Ramadhan', ?)
-         ON DUPLICATE KEY UPDATE setting_value = ?, updated_by = ?`,
-        [year.toString(), session.user.id, year.toString(), session.user.id]
+        `UPDATE app_settings SET setting_value = ?, updated_by = ? WHERE setting_key = 'sukarelawan_tahun_aktif'`,
+        [year.toString(), session.user.id]
       );
     }
 
     if (pendaftaran_aktif !== undefined) {
       const isActive = pendaftaran_aktif ? 'true' : 'false';
+      console.log('PUT /api/settings/sukarelawan - Updating pendaftaran_aktif to:', isActive);
       await pool.query(
-        `INSERT INTO app_settings (setting_key, setting_value, setting_type, description, updated_by)
-         VALUES ('sukarelawan_pendaftaran_aktif', ?, 'boolean', 'Status pendaftaran Sukarelawan Ramadhan', ?)
-         ON DUPLICATE KEY UPDATE setting_value = ?, updated_by = ?`,
-        [isActive, session.user.id, isActive, session.user.id]
+        `UPDATE app_settings SET setting_value = ?, updated_by = ? WHERE setting_key = 'sukarelawan_pendaftaran_aktif'`,
+        [isActive, session.user.id]
       );
     }
 
+    console.log('PUT /api/settings/sukarelawan - Success');
     return NextResponse.json({ success: true, message: 'Tetapan dikemaskini' });
   } catch (error) {
     console.error('Error updating sukarelawan settings:', error);
