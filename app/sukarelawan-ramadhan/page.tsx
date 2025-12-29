@@ -188,6 +188,21 @@ export default function SukarelawanRamadhanPage() {
                 )}
 
                 <form onSubmit={handleSubmit}>
+                  {/* Tahun */}
+                  <div className="mb-4">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-calendar me-1 text-success"></i>
+                      Tahun
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control form-control-lg bg-light"
+                      value={tahunAktif}
+                      readOnly
+                      disabled
+                    />
+                  </div>
+
                   {/* Nama Penuh */}
                   <div className="mb-4">
                     <label className="form-label fw-semibold">
