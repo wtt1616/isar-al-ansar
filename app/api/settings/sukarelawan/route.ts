@@ -49,8 +49,8 @@ export async function GET() {
   }
 }
 
-// PUT - Update sukarelawan settings (admin only)
-export async function PUT(request: NextRequest) {
+// POST - Update sukarelawan settings (admin only)
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     console.log('PUT /api/settings/sukarelawan - Session:', session?.user?.email, 'Role:', session?.user?.role);

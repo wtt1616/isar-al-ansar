@@ -96,7 +96,7 @@ export default function SukarelawanRamadhanAdminPage() {
     try {
       setSettingsLoading(true);
       const res = await fetch('/api/settings/sukarelawan', {
-        method: 'PUT',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
