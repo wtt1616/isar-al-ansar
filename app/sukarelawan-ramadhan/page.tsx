@@ -167,7 +167,7 @@ export default function SukarelawanRamadhanPage() {
               <h4 className="fw-normal mb-3">MUSLIMIN SURAU AL-ANSAR TAHUN {tahunAktif}</h4>
               <p className="opacity-75">
                 <i className="bi bi-geo-alt me-1"></i>
-                Surau Al-Ansar, Taman Kajang Utama
+                Surau Al-Ansar, Bandar Tun Hussein Onn
               </p>
             </div>
 
