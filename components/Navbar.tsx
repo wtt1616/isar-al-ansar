@@ -555,10 +555,12 @@ export default function Navbar() {
                     pathname === '/users' ||
                     pathname === '/admin/roles' ||
                     pathname === '/admin/permissions' ||
+                    pathname === '/admin/pengumuman' ||
                     pathname === '/preachers/manage' ||
                     pathname === '/dashboard/maklumbalas' ||
                     pathname === '/dashboard/tender' ||
                     pathname === '/dashboard/sumbang-derma' ||
+                    pathname === '/dashboard/sukarelawan-ramadhan' ||
                     pathname.startsWith('/dashboard/komuniti2u')
                       ? 'active' : ''
                   }`}
@@ -627,6 +629,19 @@ export default function Navbar() {
                     <Link className="dropdown-item" href="/dashboard/sumbang-derma">
                       <i className="bi bi-hand-thumbs-up me-2"></i>
                       Sumbang & Derma
+                    </Link>
+                  </li>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li>
+                    <Link className="dropdown-item" href="/admin/pengumuman">
+                      <i className="bi bi-megaphone me-2"></i>
+                      Pengumuman
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" href="/dashboard/sukarelawan-ramadhan">
+                      <i className="bi bi-people me-2"></i>
+                      Sukarelawan Ramadhan
                     </Link>
                   </li>
                 </ul>
