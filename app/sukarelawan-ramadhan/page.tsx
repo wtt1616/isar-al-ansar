@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const ZON_OPTIONS = ['Zon 2', 'Zon 3', 'Zon 4', 'AEE'];
@@ -8,7 +8,9 @@ const SIZE_BAJU_OPTIONS = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '5XL'
 const HARI_OPTIONS = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad', 'Setiap Hari'];
 
 export default function SukarelawanRamadhanPage() {
-  const currentYear = new Date().getFullYear();
+  const [tahunAktif, setTahunAktif] = useState<number>(new Date().getFullYear());
+  const [pendaftaranAktif, setPendaftaranAktif] = useState<boolean>(true);
+  const [settingsLoading, setSettingsLoading] = useState(true);
   const [formData, setFormData] = useState({
     nama_penuh: '',
     no_telefon: '',
@@ -19,6 +21,23 @@ export default function SukarelawanRamadhanPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  // Fetch settings on mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings/sukarelawan');
+        const data = await res.json();
+        setTahunAktif(data.sukarelawan_tahun_aktif || new Date().getFullYear());
+        setPendaftaranAktif(data.sukarelawan_pendaftaran_aktif !== false);
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+      } finally {
+        setSettingsLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +56,7 @@ export default function SukarelawanRamadhanPage() {
       const res = await fetch('/api/sukarelawan-ramadhan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, tahun: currentYear })
+        body: JSON.stringify({ ...formData, tahun: tahunAktif })
       });
 
       const data = await res.json();
@@ -59,6 +78,49 @@ export default function SukarelawanRamadhanPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Loading state
+  if (settingsLoading) {
+    return (
+      <div className="min-vh-100 d-flex align-items-center justify-content-center" style={{ background: 'linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%)' }}>
+        <div className="text-center text-white">
+          <div className="spinner-border spinner-border-lg mb-3" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p>Memuatkan...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Registration closed
+  if (!pendaftaranAktif) {
+    return (
+      <div className="min-vh-100 d-flex align-items-center justify-content-center" style={{ background: 'linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%)' }}>
+        <div className="container py-5">
+          <div className="row justify-content-center">
+            <div className="col-md-8 col-lg-6">
+              <div className="card shadow-lg border-0">
+                <div className="card-body text-center p-5">
+                  <div className="mb-4">
+                    <i className="bi bi-calendar-x-fill text-warning" style={{ fontSize: '5rem' }}></i>
+                  </div>
+                  <h3 className="text-warning mb-3">Pendaftaran Ditutup</h3>
+                  <p className="text-muted mb-4">
+                    Pendaftaran Sukarelawan Ramadhan {tahunAktif} telah ditutup buat sementara waktu.
+                    Sila hubungi pihak surau untuk maklumat lanjut.
+                  </p>
+                  <Link href="/" className="btn btn-success btn-lg mt-3">
+                    <i className="bi bi-house me-2"></i>Kembali ke Laman Utama
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (success) {
     return (
       <div className="min-vh-100 d-flex align-items-center justify-content-center" style={{ background: 'linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%)' }}>
@@ -72,7 +134,7 @@ export default function SukarelawanRamadhanPage() {
                   </div>
                   <h3 className="text-success mb-3">Pendaftaran Berjaya!</h3>
                   <p className="text-muted mb-4">
-                    Terima kasih kerana mendaftar sebagai Sukarelawan Ramadhan {currentYear}.
+                    Terima kasih kerana mendaftar sebagai Sukarelawan Ramadhan {tahunAktif}.
                     Pihak surau akan menghubungi anda untuk pengesahan.
                   </p>
                   <div className="alert alert-info">
@@ -102,7 +164,7 @@ export default function SukarelawanRamadhanPage() {
                 <i className="bi bi-moon-stars-fill" style={{ fontSize: '3rem' }}></i>
               </div>
               <h2 className="fw-bold mb-2">PENDAFTARAN SUKARELAWAN RAMADHAN</h2>
-              <h4 className="fw-normal mb-3">MUSLIMIN SURAU AL-ANSAR TAHUN {currentYear}</h4>
+              <h4 className="fw-normal mb-3">MUSLIMIN SURAU AL-ANSAR TAHUN {tahunAktif}</h4>
               <p className="opacity-75">
                 <i className="bi bi-geo-alt me-1"></i>
                 Surau Al-Ansar, Taman Kajang Utama

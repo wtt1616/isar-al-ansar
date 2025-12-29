@@ -34,6 +34,11 @@ interface SizeStat {
   count: number;
 }
 
+interface SettingsData {
+  sukarelawan_tahun_aktif: number;
+  sukarelawan_pendaftaran_aktif: boolean;
+}
+
 const HARI_OPTIONS = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad', 'Setiap Hari'];
 
 export default function SukarelawanRamadhanAdminPage() {
@@ -53,6 +58,14 @@ export default function SukarelawanRamadhanAdminPage() {
   const [showModal, setShowModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Settings state
+  const [settings, setSettings] = useState<SettingsData>({
+    sukarelawan_tahun_aktif: currentYear,
+    sukarelawan_pendaftaran_aktif: true
+  });
+  const [settingsLoading, setSettingsLoading] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+
   useEffect(() => {
     if (authStatus === 'unauthenticated') {
       router.push('/login');
@@ -61,9 +74,49 @@ export default function SukarelawanRamadhanAdminPage() {
 
   useEffect(() => {
     if (session?.user?.role === 'admin') {
+      fetchSettings();
       fetchData();
     }
   }, [session, tahun, statusFilter, hariFilter]);
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch('/api/settings/sukarelawan');
+      const data = await res.json();
+      setSettings({
+        sukarelawan_tahun_aktif: data.sukarelawan_tahun_aktif || currentYear,
+        sukarelawan_pendaftaran_aktif: data.sukarelawan_pendaftaran_aktif !== false
+      });
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
+
+  const saveSettings = async () => {
+    try {
+      setSettingsLoading(true);
+      const res = await fetch('/api/settings/sukarelawan', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tahun_aktif: settings.sukarelawan_tahun_aktif,
+          pendaftaran_aktif: settings.sukarelawan_pendaftaran_aktif
+        })
+      });
+
+      if (res.ok) {
+        setShowSettingsModal(false);
+        alert('Tetapan berjaya dikemaskini');
+      } else {
+        alert('Ralat kemaskini tetapan');
+      }
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert('Ralat kemaskini tetapan');
+    } finally {
+      setSettingsLoading(false);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -174,6 +227,9 @@ export default function SukarelawanRamadhanAdminPage() {
           <p className="text-muted mb-0">Pengurusan pendaftaran sukarelawan</p>
         </div>
         <div className="d-flex gap-2">
+          <button className="btn btn-outline-primary" onClick={() => setShowSettingsModal(true)}>
+            <i className="bi bi-gear me-1"></i> Tetapan
+          </button>
           <button className="btn btn-success" onClick={handleExport}>
             <i className="bi bi-file-earmark-excel me-1"></i> Export Excel
           </button>
@@ -240,6 +296,30 @@ export default function SukarelawanRamadhanAdminPage() {
           </div>
         </div>
       )}
+
+      {/* Settings Status Bar */}
+      <div className="alert alert-light border mb-4 d-flex align-items-center justify-content-between">
+        <div>
+          <i className="bi bi-info-circle me-2"></i>
+          <strong>Borang Awam:</strong>{' '}
+          Tahun <strong>{settings.sukarelawan_tahun_aktif}</strong> |{' '}
+          {settings.sukarelawan_pendaftaran_aktif ? (
+            <span className="text-success">
+              <i className="bi bi-check-circle me-1"></i>Dibuka
+            </span>
+          ) : (
+            <span className="text-danger">
+              <i className="bi bi-x-circle me-1"></i>Ditutup
+            </span>
+          )}
+        </div>
+        <button
+          className="btn btn-sm btn-outline-primary"
+          onClick={() => setShowSettingsModal(true)}
+        >
+          <i className="bi bi-gear me-1"></i>Ubah
+        </button>
+      </div>
 
       {/* Stats by Hari and Size */}
       <div className="row g-3 mb-4">
@@ -475,6 +555,109 @@ export default function SukarelawanRamadhanAdminPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  <i className="bi bi-gear me-2"></i>
+                  Tetapan Pendaftaran Sukarelawan
+                </h5>
+                <button className="btn-close" onClick={() => setShowSettingsModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-4">
+                  <label className="form-label fw-semibold">Tahun Aktif</label>
+                  <select
+                    className="form-select"
+                    value={settings.sukarelawan_tahun_aktif}
+                    onChange={(e) => setSettings(prev => ({
+                      ...prev,
+                      sukarelawan_tahun_aktif: parseInt(e.target.value, 10)
+                    }))}
+                  >
+                    {[currentYear + 1, currentYear, currentYear - 1, currentYear - 2].map(y => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </select>
+                  <div className="form-text">
+                    Tahun yang akan dipaparkan pada borang pendaftaran awam.
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Status Pendaftaran</label>
+                  <div className="form-check form-switch">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="pendaftaranSwitch"
+                      checked={settings.sukarelawan_pendaftaran_aktif}
+                      onChange={(e) => setSettings(prev => ({
+                        ...prev,
+                        sukarelawan_pendaftaran_aktif: e.target.checked
+                      }))}
+                    />
+                    <label className="form-check-label" htmlFor="pendaftaranSwitch">
+                      {settings.sukarelawan_pendaftaran_aktif ? (
+                        <span className="text-success fw-medium">
+                          <i className="bi bi-check-circle me-1"></i>
+                          Pendaftaran Dibuka
+                        </span>
+                      ) : (
+                        <span className="text-danger fw-medium">
+                          <i className="bi bi-x-circle me-1"></i>
+                          Pendaftaran Ditutup
+                        </span>
+                      )}
+                    </label>
+                  </div>
+                  <div className="form-text">
+                    Jika ditutup, borang pendaftaran awam akan memaparkan mesej pendaftaran ditutup.
+                  </div>
+                </div>
+
+                <div className="alert alert-info mb-0">
+                  <i className="bi bi-info-circle me-2"></i>
+                  <strong>Link borang awam:</strong>
+                  <br />
+                  <code className="user-select-all">{typeof window !== 'undefined' ? window.location.origin : ''}/sukarelawan-ramadhan</code>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowSettingsModal(false)}
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={saveSettings}
+                  disabled={settingsLoading}
+                >
+                  {settingsLoading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-1"></span>
+                      Menyimpan...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-check-lg me-1"></i>
+                      Simpan Tetapan
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
