@@ -40,6 +40,8 @@ interface SettingsData {
 }
 
 const HARI_OPTIONS = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad', 'Setiap Hari'];
+const ZON_OPTIONS = ['Zon 2', 'Zon 3', 'Zon 4', 'AEE'];
+const SIZE_OPTIONS = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '5XL', '7XL'];
 
 export default function SukarelawanRamadhanAdminPage() {
   const { data: session, status: authStatus } = useSession();
@@ -65,6 +67,17 @@ export default function SukarelawanRamadhanAdminPage() {
   });
   const [settingsLoading, setSettingsLoading] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+  // Edit state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    id: 0,
+    nama_penuh: '',
+    no_telefon: '',
+    zon_tempat_tinggal: '',
+    size_baju: '',
+    hari_bertugas: ''
+  });
 
   useEffect(() => {
     if (authStatus === 'unauthenticated') {
@@ -178,6 +191,50 @@ export default function SukarelawanRamadhanAdminPage() {
       }
     } catch (error) {
       console.error('Error deleting:', error);
+    }
+  };
+
+  const handleEdit = (item: Sukarelawan) => {
+    setEditFormData({
+      id: item.id,
+      nama_penuh: item.nama_penuh,
+      no_telefon: item.no_telefon,
+      zon_tempat_tinggal: item.zon_tempat_tinggal,
+      size_baju: item.size_baju,
+      hari_bertugas: item.hari_bertugas
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      setActionLoading(true);
+      const res = await fetch('/api/sukarelawan-ramadhan', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editFormData.id,
+          nama_penuh: editFormData.nama_penuh,
+          no_telefon: editFormData.no_telefon,
+          zon_tempat_tinggal: editFormData.zon_tempat_tinggal,
+          size_baju: editFormData.size_baju,
+          hari_bertugas: editFormData.hari_bertugas
+        })
+      });
+
+      if (res.ok) {
+        fetchData();
+        setShowEditModal(false);
+        alert('Rekod berjaya dikemaskini');
+      } else {
+        const data = await res.json();
+        alert('Ralat: ' + (data.error || 'Gagal kemaskini'));
+      }
+    } catch (error) {
+      console.error('Error updating:', error);
+      alert('Ralat kemaskini rekod');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -508,6 +565,13 @@ export default function SukarelawanRamadhanAdminPage() {
                             </button>
                           )}
                           <button
+                            className="btn btn-outline-primary"
+                            onClick={() => handleEdit(item)}
+                            title="Edit"
+                          >
+                            <i className="bi bi-pencil"></i>
+                          </button>
+                          <button
                             className="btn btn-outline-danger"
                             onClick={() => handleDelete(item.id)}
                             title="Padam"
@@ -560,6 +624,97 @@ export default function SukarelawanRamadhanAdminPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  <i className="bi bi-pencil me-2"></i>
+                  Edit Pendaftaran
+                </h5>
+                <button className="btn-close" onClick={() => setShowEditModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <div className="row g-3">
+                  <div className="col-12">
+                    <label className="form-label fw-semibold">Nama Penuh</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={editFormData.nama_penuh}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, nama_penuh: e.target.value }))}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold">No Telefon</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={editFormData.no_telefon}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, no_telefon: e.target.value }))}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold">Zon Tempat Tinggal</label>
+                    <select
+                      className="form-select"
+                      value={editFormData.zon_tempat_tinggal}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, zon_tempat_tinggal: e.target.value }))}
+                    >
+                      <option value="">-- Pilih Zon --</option>
+                      {ZON_OPTIONS.map(zon => (
+                        <option key={zon} value={zon}>{zon}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold">Size Baju</label>
+                    <select
+                      className="form-select"
+                      value={editFormData.size_baju}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, size_baju: e.target.value }))}
+                    >
+                      <option value="">-- Pilih Size --</option>
+                      {SIZE_OPTIONS.map(size => (
+                        <option key={size} value={size}>{size}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label fw-semibold">Hari Bertugas</label>
+                    <select
+                      className="form-select"
+                      value={editFormData.hari_bertugas}
+                      onChange={(e) => setEditFormData(prev => ({ ...prev, hari_bertugas: e.target.value }))}
+                    >
+                      <option value="">-- Pilih Hari --</option>
+                      {HARI_OPTIONS.map(hari => (
+                        <option key={hari} value={hari}>{hari}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleSaveEdit}
+                  disabled={actionLoading}
+                >
+                  {actionLoading ? 'Menyimpan...' : 'Simpan Perubahan'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT - Update sukarelawan status (admin only)
+// PUT - Update sukarelawan (admin only)
 export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -128,22 +128,43 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, status, catatan } = body;
+    const { id, status, catatan, nama_penuh, no_telefon, zon_tempat_tinggal, size_baju, hari_bertugas } = body;
 
-    if (!id || !status) {
-      return NextResponse.json({ error: 'ID dan status diperlukan' }, { status: 400 });
+    if (!id) {
+      return NextResponse.json({ error: 'ID diperlukan' }, { status: 400 });
     }
 
-    if (!['pending', 'approved', 'rejected'].includes(status)) {
-      return NextResponse.json({ error: 'Status tidak sah' }, { status: 400 });
+    // If status is provided, update status only
+    if (status) {
+      if (!['pending', 'approved', 'rejected'].includes(status)) {
+        return NextResponse.json({ error: 'Status tidak sah' }, { status: 400 });
+      }
+
+      await pool.query(
+        'UPDATE sukarelawan_ramadhan SET status = ?, catatan = ? WHERE id = ?',
+        [status, catatan || null, id]
+      );
+
+      return NextResponse.json({ success: true, message: 'Status dikemaskini' });
     }
 
-    await pool.query(
-      'UPDATE sukarelawan_ramadhan SET status = ?, catatan = ? WHERE id = ?',
-      [status, catatan || null, id]
-    );
+    // Otherwise, update record details
+    if (nama_penuh || no_telefon || zon_tempat_tinggal || size_baju || hari_bertugas) {
+      await pool.query(
+        `UPDATE sukarelawan_ramadhan SET
+          nama_penuh = COALESCE(?, nama_penuh),
+          no_telefon = COALESCE(?, no_telefon),
+          zon_tempat_tinggal = COALESCE(?, zon_tempat_tinggal),
+          size_baju = COALESCE(?, size_baju),
+          hari_bertugas = COALESCE(?, hari_bertugas)
+         WHERE id = ?`,
+        [nama_penuh, no_telefon, zon_tempat_tinggal, size_baju, hari_bertugas, id]
+      );
 
-    return NextResponse.json({ success: true, message: 'Status dikemaskini' });
+      return NextResponse.json({ success: true, message: 'Rekod dikemaskini' });
+    }
+
+    return NextResponse.json({ error: 'Tiada data untuk dikemaskini' }, { status: 400 });
   } catch (error) {
     console.error('Error updating sukarelawan:', error);
     return NextResponse.json({ error: 'Ralat server' }, { status: 500 });
