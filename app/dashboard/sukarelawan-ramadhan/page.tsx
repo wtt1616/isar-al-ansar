@@ -380,15 +380,15 @@ export default function SukarelawanRamadhanAdminPage() {
           <div className="row g-3 align-items-end">
             <div className="col-md-3">
               <label className="form-label">Tahun</label>
-              <select
-                className="form-select"
+              <input
+                type="number"
+                className="form-control"
                 value={tahun}
                 onChange={(e) => setTahun(e.target.value)}
-              >
-                {[currentYear, currentYear - 1, currentYear - 2].map(y => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
+                min="2020"
+                max="2100"
+                placeholder="Contoh: 2025"
+              />
             </div>
             <div className="col-md-3">
               <label className="form-label">Status</label>
@@ -580,18 +580,18 @@ export default function SukarelawanRamadhanAdminPage() {
               <div className="modal-body">
                 <div className="mb-4">
                   <label className="form-label fw-semibold">Tahun Aktif</label>
-                  <select
-                    className="form-select"
+                  <input
+                    type="number"
+                    className="form-control"
                     value={settings.sukarelawan_tahun_aktif}
                     onChange={(e) => setSettings(prev => ({
                       ...prev,
-                      sukarelawan_tahun_aktif: parseInt(e.target.value, 10)
+                      sukarelawan_tahun_aktif: parseInt(e.target.value, 10) || currentYear
                     }))}
-                  >
-                    {[currentYear + 1, currentYear, currentYear - 1, currentYear - 2].map(y => (
-                      <option key={y} value={y}>{y}</option>
-                    ))}
-                  </select>
+                    min="2020"
+                    max="2100"
+                    placeholder="Contoh: 2026"
+                  />
                   <div className="form-text">
                     Tahun yang akan dipaparkan pada borang pendaftaran awam.
                   </div>
