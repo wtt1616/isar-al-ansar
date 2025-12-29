@@ -1,0 +1,291 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+
+const ZON_OPTIONS = ['Zon 2', 'Zon 3', 'Zon 4', 'AEE'];
+const SIZE_BAJU_OPTIONS = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '5XL', '7XL'];
+const HARI_OPTIONS = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad', 'Setiap Hari'];
+
+export default function SukarelawanRamadhanPage() {
+  const currentYear = new Date().getFullYear();
+  const [formData, setFormData] = useState({
+    nama_penuh: '',
+    no_telefon: '',
+    zon_tempat_tinggal: '',
+    size_baju: '',
+    hari_bertugas: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    // Validation
+    if (!formData.nama_penuh || !formData.no_telefon || !formData.zon_tempat_tinggal ||
+        !formData.size_baju || !formData.hari_bertugas) {
+      setError('Sila lengkapkan semua maklumat yang diperlukan');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/sukarelawan-ramadhan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, tahun: currentYear })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Ralat semasa mendaftar');
+      }
+
+      setSuccess(true);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  if (success) {
+    return (
+      <div className="min-vh-100 d-flex align-items-center justify-content-center" style={{ background: 'linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%)' }}>
+        <div className="container py-5">
+          <div className="row justify-content-center">
+            <div className="col-md-8 col-lg-6">
+              <div className="card shadow-lg border-0">
+                <div className="card-body text-center p-5">
+                  <div className="mb-4">
+                    <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '5rem' }}></i>
+                  </div>
+                  <h3 className="text-success mb-3">Pendaftaran Berjaya!</h3>
+                  <p className="text-muted mb-4">
+                    Terima kasih kerana mendaftar sebagai Sukarelawan Ramadhan {currentYear}.
+                    Pihak surau akan menghubungi anda untuk pengesahan.
+                  </p>
+                  <div className="alert alert-info">
+                    <i className="bi bi-info-circle me-2"></i>
+                    Sila tunggu panggilan atau mesej WhatsApp daripada pihak surau.
+                  </div>
+                  <Link href="/" className="btn btn-success btn-lg mt-3">
+                    <i className="bi bi-house me-2"></i>Kembali ke Laman Utama
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-vh-100" style={{ background: 'linear-gradient(135deg, #1a5f2a 0%, #2d8a3e 100%)' }}>
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-md-10 col-lg-8">
+            {/* Header */}
+            <div className="text-center text-white mb-4">
+              <div className="mb-3">
+                <i className="bi bi-moon-stars-fill" style={{ fontSize: '3rem' }}></i>
+              </div>
+              <h2 className="fw-bold mb-2">PENDAFTARAN SUKARELAWAN RAMADHAN</h2>
+              <h4 className="fw-normal mb-3">MUSLIMIN SURAU AL-ANSAR TAHUN {currentYear}</h4>
+              <p className="opacity-75">
+                <i className="bi bi-geo-alt me-1"></i>
+                Surau Al-Ansar, Taman Kajang Utama
+              </p>
+            </div>
+
+            {/* Form Card */}
+            <div className="card shadow-lg border-0">
+              <div className="card-header bg-success text-white py-3">
+                <h5 className="mb-0">
+                  <i className="bi bi-clipboard-check me-2"></i>
+                  Borang Pendaftaran
+                </h5>
+              </div>
+              <div className="card-body p-4">
+                {error && (
+                  <div className="alert alert-danger d-flex align-items-center">
+                    <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                    {error}
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit}>
+                  {/* Nama Penuh */}
+                  <div className="mb-4">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-person me-1 text-success"></i>
+                      Nama Penuh <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control form-control-lg"
+                      name="nama_penuh"
+                      value={formData.nama_penuh}
+                      onChange={handleChange}
+                      placeholder="Masukkan nama penuh seperti dalam IC"
+                      required
+                    />
+                  </div>
+
+                  {/* No Telefon */}
+                  <div className="mb-4">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-telephone me-1 text-success"></i>
+                      Nombor Telefon <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      className="form-control form-control-lg"
+                      name="no_telefon"
+                      value={formData.no_telefon}
+                      onChange={handleChange}
+                      placeholder="Contoh: 012-3456789"
+                      required
+                    />
+                  </div>
+
+                  {/* Zon Tempat Tinggal */}
+                  <div className="mb-4">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-geo-alt me-1 text-success"></i>
+                      Zon Tempat Tinggal <span className="text-danger">*</span>
+                    </label>
+                    <div className="row g-2">
+                      {ZON_OPTIONS.map((zon) => (
+                        <div key={zon} className="col-6 col-md-3">
+                          <input
+                            type="radio"
+                            className="btn-check"
+                            name="zon_tempat_tinggal"
+                            id={`zon-${zon}`}
+                            value={zon}
+                            checked={formData.zon_tempat_tinggal === zon}
+                            onChange={handleChange}
+                            required
+                          />
+                          <label className="btn btn-outline-success w-100" htmlFor={`zon-${zon}`}>
+                            {zon}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Size Baju */}
+                  <div className="mb-4">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-tag me-1 text-success"></i>
+                      Size Baju <span className="text-danger">*</span>
+                    </label>
+                    <div className="row g-2">
+                      {SIZE_BAJU_OPTIONS.map((size) => (
+                        <div key={size} className="col-4 col-md-3 col-lg-2">
+                          <input
+                            type="radio"
+                            className="btn-check"
+                            name="size_baju"
+                            id={`size-${size}`}
+                            value={size}
+                            checked={formData.size_baju === size}
+                            onChange={handleChange}
+                            required
+                          />
+                          <label className="btn btn-outline-success w-100" htmlFor={`size-${size}`}>
+                            {size}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Hari Bertugas */}
+                  <div className="mb-4">
+                    <label className="form-label fw-semibold">
+                      <i className="bi bi-calendar-week me-1 text-success"></i>
+                      Hari Bertugas <span className="text-danger">*</span>
+                    </label>
+                    <p className="text-muted small mb-2">
+                      <i className="bi bi-info-circle me-1"></i>
+                      Pihak surau tidak menjamin hari yang dipilih dan mungkin akan menukarnya mengikut keperluan.
+                    </p>
+                    <div className="row g-2">
+                      {HARI_OPTIONS.map((hari) => (
+                        <div key={hari} className="col-6 col-md-3">
+                          <input
+                            type="radio"
+                            className="btn-check"
+                            name="hari_bertugas"
+                            id={`hari-${hari}`}
+                            value={hari}
+                            checked={formData.hari_bertugas === hari}
+                            onChange={handleChange}
+                            required
+                          />
+                          <label
+                            className={`btn w-100 ${hari === 'Setiap Hari' ? 'btn-outline-primary' : 'btn-outline-success'}`}
+                            htmlFor={`hari-${hari}`}
+                          >
+                            {hari}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="d-grid gap-2 mt-5">
+                    <button
+                      type="submit"
+                      className="btn btn-success btn-lg py-3"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2"></span>
+                          Menghantar...
+                        </>
+                      ) : (
+                        <>
+                          <i className="bi bi-send me-2"></i>
+                          Hantar Pendaftaran
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="text-center text-white mt-4">
+              <p className="small opacity-75">
+                <i className="bi bi-envelope me-1"></i>
+                Sebarang pertanyaan sila hubungi pihak surau
+              </p>
+              <Link href="/" className="btn btn-outline-light btn-sm">
+                <i className="bi bi-arrow-left me-1"></i>
+                Kembali
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
