@@ -64,6 +64,17 @@ interface Aktiviti {
   status: string;
 }
 
+interface Pengumuman {
+  id: number;
+  tajuk: string;
+  keterangan: string | null;
+  tarikh_mula: string;
+  tarikh_akhir: string;
+  status: string;
+  url: string | null;
+  imej: string | null;
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -78,6 +89,8 @@ export default function LoginPage() {
   const [selectedBanner, setSelectedBanner] = useState<string | null>(null);
   const [aktivitiList, setAktivitiList] = useState<Aktiviti[]>([]);
   const [selectedAktiviti, setSelectedAktiviti] = useState<Aktiviti | null>(null);
+  const [pengumumanList, setPengumumanList] = useState<Pengumuman[]>([]);
+  const [selectedPengumuman, setSelectedPengumuman] = useState<Pengumuman | null>(null);
   const [prayerTimesData, setPrayerTimesData] = useState<{
     Subuh: string;
     Zohor: string;
@@ -274,6 +287,22 @@ export default function LoginPage() {
       }
     };
     fetchAktiviti();
+  }, []);
+
+  // Fetch active pengumuman
+  useEffect(() => {
+    const fetchPengumuman = async () => {
+      try {
+        const res = await fetch('/api/pengumuman?active=true');
+        if (res.ok) {
+          const data = await res.json();
+          setPengumumanList(data.data || []);
+        }
+      } catch (error) {
+        console.error('Error fetching pengumuman:', error);
+      }
+    };
+    fetchPengumuman();
   }, []);
 
   useEffect(() => {
@@ -766,6 +795,74 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Pengumuman Section */}
+      {pengumumanList.length > 0 && (
+        <div className="container mt-3">
+          <div className="row g-3">
+            {pengumumanList.map((pengumuman) => (
+              <div key={pengumuman.id} className="col-12 col-md-6 col-lg-4">
+                <div
+                  className="card h-100 shadow-sm border-0"
+                  style={{
+                    cursor: pengumuman.url || pengumuman.imej ? 'pointer' : 'default',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                    borderLeft: '4px solid #f59e0b'
+                  }}
+                  onClick={() => {
+                    if (pengumuman.imej) {
+                      setSelectedPengumuman(pengumuman);
+                    } else if (pengumuman.url) {
+                      window.open(pengumuman.url, '_blank');
+                    }
+                  }}
+                  onMouseOver={(e) => {
+                    if (pengumuman.url || pengumuman.imej) {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '';
+                  }}
+                >
+                  <div className="card-body py-2 px-3">
+                    <div className="d-flex align-items-start gap-2">
+                      <i className="bi bi-megaphone-fill text-warning" style={{ fontSize: '1.2rem' }}></i>
+                      <div className="flex-grow-1">
+                        <h6 className="mb-1 fw-bold" style={{ color: '#92400e', fontSize: '0.9rem' }}>
+                          {pengumuman.tajuk}
+                        </h6>
+                        {pengumuman.keterangan && (
+                          <p className="mb-1 text-dark small" style={{ fontSize: '0.8rem', lineHeight: '1.4' }}>
+                            {pengumuman.keterangan.length > 100
+                              ? pengumuman.keterangan.substring(0, 100) + '...'
+                              : pengumuman.keterangan}
+                          </p>
+                        )}
+                        <div className="d-flex align-items-center gap-2">
+                          {pengumuman.imej && (
+                            <span className="badge bg-warning text-dark" style={{ fontSize: '0.65rem' }}>
+                              <i className="bi bi-image me-1"></i>Lihat Poster
+                            </span>
+                          )}
+                          {pengumuman.url && (
+                            <span className="badge bg-primary" style={{ fontSize: '0.65rem' }}>
+                              <i className="bi bi-link-45deg me-1"></i>Pautan
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="container mt-4 pb-5">
@@ -1352,6 +1449,59 @@ export default function LoginPage() {
                     </>
                   )}
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pengumuman Image View Modal */}
+      {selectedPengumuman && selectedPengumuman.imej && (
+        <div
+          className="modal show d-block"
+          tabIndex={-1}
+          style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
+          onClick={() => setSelectedPengumuman(null)}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-content" style={{ backgroundColor: 'transparent', border: 'none' }} onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                className="btn btn-light position-absolute"
+                style={{ top: '-45px', right: '0', zIndex: 1060 }}
+                onClick={() => setSelectedPengumuman(null)}
+              >
+                <i className="bi bi-x-lg"></i>
+              </button>
+              <div style={{ maxHeight: '70vh', overflow: 'auto' }}>
+                <img
+                  src={`/uploads/pengumuman/${selectedPengumuman.imej}`}
+                  alt={selectedPengumuman.tajuk}
+                  style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}
+                />
+              </div>
+              {/* Info Section */}
+              <div className="mt-3 p-3" style={{ backgroundColor: 'white', borderRadius: '0.5rem' }}>
+                <h5 className="mb-2" style={{ color: '#92400e' }}>
+                  <i className="bi bi-megaphone-fill text-warning me-2"></i>
+                  {selectedPengumuman.tajuk}
+                </h5>
+                {selectedPengumuman.keterangan && (
+                  <p className="mb-2 text-dark" style={{ whiteSpace: 'pre-wrap' }}>
+                    {selectedPengumuman.keterangan}
+                  </p>
+                )}
+                {selectedPengumuman.url && (
+                  <a
+                    href={selectedPengumuman.url}
+                    target="_blank"
+                    className="btn btn-primary btn-sm"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <i className="bi bi-link-45deg me-1"></i>
+                    Buka Pautan
+                  </a>
+                )}
               </div>
             </div>
           </div>
