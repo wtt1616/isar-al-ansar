@@ -37,6 +37,7 @@ interface SizeStat {
 interface SettingsData {
   sukarelawan_tahun_aktif: number;
   sukarelawan_pendaftaran_aktif: boolean;
+  sukarelawan_hari_options: string; // comma-separated enabled days
 }
 
 const HARI_OPTIONS = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad', 'Setiap Hari'];
@@ -63,7 +64,8 @@ export default function SukarelawanRamadhanAdminPage() {
   // Settings state
   const [settings, setSettings] = useState<SettingsData>({
     sukarelawan_tahun_aktif: currentYear,
-    sukarelawan_pendaftaran_aktif: true
+    sukarelawan_pendaftaran_aktif: true,
+    sukarelawan_hari_options: HARI_OPTIONS.join(',')
   });
   const [settingsLoading, setSettingsLoading] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -98,7 +100,8 @@ export default function SukarelawanRamadhanAdminPage() {
       const data = await res.json();
       setSettings({
         sukarelawan_tahun_aktif: data.sukarelawan_tahun_aktif || currentYear,
-        sukarelawan_pendaftaran_aktif: data.sukarelawan_pendaftaran_aktif !== false
+        sukarelawan_pendaftaran_aktif: data.sukarelawan_pendaftaran_aktif !== false,
+        sukarelawan_hari_options: data.sukarelawan_hari_options || HARI_OPTIONS.join(',')
       });
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -114,7 +117,8 @@ export default function SukarelawanRamadhanAdminPage() {
         credentials: 'include',
         body: JSON.stringify({
           tahun_aktif: settings.sukarelawan_tahun_aktif,
-          pendaftaran_aktif: settings.sukarelawan_pendaftaran_aktif
+          pendaftaran_aktif: settings.sukarelawan_pendaftaran_aktif,
+          hari_options: settings.sukarelawan_hari_options
         })
       });
 
@@ -752,7 +756,7 @@ export default function SukarelawanRamadhanAdminPage() {
                   </div>
                 </div>
 
-                <div className="mb-3">
+                <div className="mb-4">
                   <label className="form-label fw-semibold">Status Pendaftaran</label>
                   <div className="form-check form-switch">
                     <input
@@ -781,6 +785,49 @@ export default function SukarelawanRamadhanAdminPage() {
                   </div>
                   <div className="form-text">
                     Jika ditutup, borang pendaftaran awam akan memaparkan mesej pendaftaran ditutup.
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <label className="form-label fw-semibold">Pilihan Hari Bertugas</label>
+                  <div className="form-text mb-2">
+                    Pilih hari-hari yang akan dipaparkan pada borang pendaftaran awam.
+                  </div>
+                  <div className="row g-2">
+                    {HARI_OPTIONS.map(hari => {
+                      const enabledDays = settings.sukarelawan_hari_options.split(',').map(d => d.trim());
+                      const isEnabled = enabledDays.includes(hari);
+                      return (
+                        <div key={hari} className="col-6">
+                          <div className="form-check">
+                            <input
+                              type="checkbox"
+                              className="form-check-input"
+                              id={`hari-${hari}`}
+                              checked={isEnabled}
+                              onChange={(e) => {
+                                const currentDays = settings.sukarelawan_hari_options.split(',').map(d => d.trim()).filter(d => d);
+                                let newDays: string[];
+                                if (e.target.checked) {
+                                  // Add day, maintain order
+                                  newDays = HARI_OPTIONS.filter(h => currentDays.includes(h) || h === hari);
+                                } else {
+                                  // Remove day
+                                  newDays = currentDays.filter(d => d !== hari);
+                                }
+                                setSettings(prev => ({
+                                  ...prev,
+                                  sukarelawan_hari_options: newDays.join(',')
+                                }));
+                              }}
+                            />
+                            <label className="form-check-label" htmlFor={`hari-${hari}`}>
+                              {hari}
+                            </label>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 

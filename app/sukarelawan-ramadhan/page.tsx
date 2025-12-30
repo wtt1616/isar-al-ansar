@@ -5,11 +5,12 @@ import Link from 'next/link';
 
 const ZON_OPTIONS = ['Zon 2', 'Zon 3', 'Zon 4', 'AEE'];
 const SIZE_BAJU_OPTIONS = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '5XL', '7XL'];
-const HARI_OPTIONS = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad', 'Setiap Hari'];
+const ALL_HARI_OPTIONS = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad', 'Setiap Hari'];
 
 export default function SukarelawanRamadhanPage() {
   const [tahunAktif, setTahunAktif] = useState<number>(new Date().getFullYear());
   const [pendaftaranAktif, setPendaftaranAktif] = useState<boolean>(true);
+  const [hariOptions, setHariOptions] = useState<string[]>(ALL_HARI_OPTIONS);
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [formData, setFormData] = useState({
     nama_penuh: '',
@@ -30,6 +31,11 @@ export default function SukarelawanRamadhanPage() {
         const data = await res.json();
         setTahunAktif(data.sukarelawan_tahun_aktif || new Date().getFullYear());
         setPendaftaranAktif(data.sukarelawan_pendaftaran_aktif !== false);
+        // Parse hari options from comma-separated string
+        if (data.sukarelawan_hari_options) {
+          const enabledDays = data.sukarelawan_hari_options.split(',').map((d: string) => d.trim()).filter((d: string) => d);
+          setHariOptions(enabledDays.length > 0 ? enabledDays : ALL_HARI_OPTIONS);
+        }
       } catch (error) {
         console.error('Error fetching settings:', error);
       } finally {
@@ -302,7 +308,7 @@ export default function SukarelawanRamadhanPage() {
                       Pihak surau tidak menjamin hari yang dipilih dan mungkin akan menukarnya mengikut keperluan.
                     </p>
                     <div className="row g-2">
-                      {HARI_OPTIONS.map((hari) => (
+                      {hariOptions.map((hari) => (
                         <div key={hari} className="col-6 col-md-3">
                           <input
                             type="radio"
