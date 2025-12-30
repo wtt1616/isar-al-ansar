@@ -13,6 +13,7 @@ interface Preacher {
   photo: string | null;
   nama_bank: string | null;
   no_akaun: string | null;
+  topik: string | null;
   is_active: number;
   created_at: string;
 }
@@ -30,6 +31,7 @@ export default function ManagePreachersPage() {
     email: '',
     nama_bank: '',
     no_akaun: '',
+    topik: '',
     is_active: true
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -78,6 +80,7 @@ export default function ManagePreachersPage() {
         email: preacher.email || '',
         nama_bank: preacher.nama_bank || '',
         no_akaun: preacher.no_akaun || '',
+        topik: preacher.topik || '',
         is_active: preacher.is_active === 1
       });
       setPhotoPreview(preacher.photo);
@@ -89,6 +92,7 @@ export default function ManagePreachersPage() {
         email: '',
         nama_bank: '',
         no_akaun: '',
+        topik: '',
         is_active: true
       });
       setPhotoPreview(null);
@@ -306,8 +310,8 @@ export default function ManagePreachersPage() {
                 <tr>
                   <th>Photo</th>
                   <th>Name</th>
+                  <th>Topik/Kitab</th>
                   <th>Phone</th>
-                  <th>Email</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -342,8 +346,8 @@ export default function ManagePreachersPage() {
                         )}
                       </td>
                       <td>{preacher.name}</td>
+                      <td>{preacher.topik || '-'}</td>
                       <td>{preacher.phone || '-'}</td>
-                      <td>{preacher.email || '-'}</td>
                       <td>
                         <span className={`badge ${preacher.is_active ? 'bg-success' : 'bg-secondary'}`}>
                           {preacher.is_active ? 'Active' : 'Inactive'}
@@ -404,6 +408,20 @@ export default function ManagePreachersPage() {
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           required
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label htmlFor="topik" className="form-label">
+                          Topik / Kitab
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="topik"
+                          value={formData.topik}
+                          onChange={(e) => setFormData({ ...formData, topik: e.target.value })}
+                          placeholder="Contoh: Tafsir Jalalain, Fiqh Manhaji"
                         />
                       </div>
 

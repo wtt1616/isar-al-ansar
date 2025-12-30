@@ -23,8 +23,8 @@ export async function GET(request: NextRequest) {
 
     // Only include sensitive fields (nama_bank, no_akaun) for authorized roles
     let query = canViewSensitiveData
-      ? 'SELECT id, name, phone, email, photo, nama_bank, no_akaun, is_active, created_at FROM preachers'
-      : 'SELECT id, name, phone, email, photo, is_active, created_at FROM preachers';
+      ? 'SELECT id, name, phone, email, photo, nama_bank, no_akaun, topik, is_active, created_at FROM preachers'
+      : 'SELECT id, name, phone, email, photo, topik, is_active, created_at FROM preachers';
 
     if (activeOnly) {
       query += ' WHERE is_active = 1';
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, phone, email, nama_bank, no_akaun } = await request.json();
+    const { name, phone, email, nama_bank, no_akaun, topik } = await request.json();
 
     // Validate required fields
     if (!name || name.trim() === '') {
@@ -120,8 +120,8 @@ export async function POST(request: NextRequest) {
 
     // Insert new preacher
     const [result] = await pool.query<ResultSetHeader>(
-      'INSERT INTO preachers (name, phone, email, nama_bank, no_akaun, is_active) VALUES (?, ?, ?, ?, ?, 1)',
-      [name.trim(), phone?.trim() || null, email?.trim() || null, nama_bank?.trim() || null, encryptedNoAkaun]
+      'INSERT INTO preachers (name, phone, email, nama_bank, no_akaun, topik, is_active) VALUES (?, ?, ?, ?, ?, ?, 1)',
+      [name.trim(), phone?.trim() || null, email?.trim() || null, nama_bank?.trim() || null, encryptedNoAkaun, topik?.trim() || null]
     );
 
     return NextResponse.json(
@@ -157,7 +157,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const { id, name, phone, email, nama_bank, no_akaun, is_active } = await request.json();
+    const { id, name, phone, email, nama_bank, no_akaun, topik, is_active } = await request.json();
 
     if (!id) {
       return NextResponse.json(
@@ -193,8 +193,8 @@ export async function PUT(request: NextRequest) {
 
     // Update preacher
     await pool.query(
-      'UPDATE preachers SET name = ?, phone = ?, email = ?, nama_bank = ?, no_akaun = ?, is_active = ? WHERE id = ?',
-      [name.trim(), phone?.trim() || null, email?.trim() || null, nama_bank?.trim() || null, encryptedNoAkaun, is_active ? 1 : 0, id]
+      'UPDATE preachers SET name = ?, phone = ?, email = ?, nama_bank = ?, no_akaun = ?, topik = ?, is_active = ? WHERE id = ?',
+      [name.trim(), phone?.trim() || null, email?.trim() || null, nama_bank?.trim() || null, encryptedNoAkaun, topik?.trim() || null, is_active ? 1 : 0, id]
     );
 
     return NextResponse.json({ message: 'Preacher updated successfully' });
