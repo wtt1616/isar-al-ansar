@@ -226,9 +226,11 @@ export default function PreacherSchedulesPage() {
     setSchedules(newSchedules);
   };
 
+  const canManageSchedules = session?.user?.role === 'head_imam' || session?.user?.role === 'admin';
+
   const handleSaveSchedules = async () => {
-    if (session?.user?.role !== 'head_imam') {
-      setError('Only Head Imam can save preacher schedules');
+    if (!canManageSchedules) {
+      setError('Hanya Head Imam atau Admin boleh simpan jadual penceramah');
       return;
     }
 
@@ -485,7 +487,7 @@ export default function PreacherSchedulesPage() {
                         if (!dayData) return null;
 
                         const schedule = schedules.get(dayData.dateString);
-                        const isHeadImam = session?.user?.role === 'head_imam';
+                        const isHeadImam = canManageSchedules;
 
                         return (
                           <td
@@ -780,7 +782,7 @@ export default function PreacherSchedulesPage() {
                     .filter((day) => day.isCurrentMonth)
                     .map((day) => {
                       const schedule = schedules.get(day.dateString);
-                      const isHeadImam = session?.user?.role === 'head_imam';
+                      const isHeadImam = canManageSchedules;
                       const dayName = day.date.toLocaleDateString('en-US', { weekday: 'long' });
                       const dayOfWeek = day.date.getDay();
 
@@ -1013,7 +1015,7 @@ export default function PreacherSchedulesPage() {
             </div>
           )}
 
-          {session?.user?.role === 'head_imam' && (
+          {canManageSchedules && (
             <div className="mt-3 d-flex gap-2 no-print">
               <button
                 className="btn btn-primary"
@@ -1028,13 +1030,13 @@ export default function PreacherSchedulesPage() {
                 ) : (
                   <>
                     <i className="bi bi-save me-2"></i>
-                    Save Schedules
+                    Simpan Jadual
                   </>
                 )}
               </button>
               <button className="btn btn-outline-secondary" onClick={handlePrint}>
                 <i className="bi bi-printer me-2"></i>
-                Print
+                Cetak
               </button>
             </div>
           )}
@@ -1042,7 +1044,7 @@ export default function PreacherSchedulesPage() {
       </div>
 
       {/* Preacher List with Bank Info */}
-      {session?.user?.role === 'head_imam' && (
+      {canManageSchedules && (
         <div className="card mb-4">
           <div className="card-header">
             <h5 className="mb-0">
@@ -1107,8 +1109,8 @@ export default function PreacherSchedulesPage() {
         </div>
       )}
 
-      {/* Banner Upload Section - Head Imam Only */}
-      {session?.user?.role === 'head_imam' && (
+      {/* Banner Upload Section - Admin & Head Imam */}
+      {canManageSchedules && (
         <div className="card mb-4">
           <div className="card-header" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', color: 'white' }}>
             <h5 className="mb-0">

@@ -124,7 +124,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Create or update preacher schedules (Head Imam only)
+// POST - Create or update preacher schedules (Head Imam or Admin)
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -133,15 +133,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is head_imam
+    // Check if user is head_imam or admin
     const userRole = (session.user as any).role;
     const userId = parseInt((session.user as any).id);
 
     console.log('POST /api/preacher-schedules - User role:', userRole, 'User ID:', userId);
 
-    if (userRole !== 'head_imam') {
+    if (userRole !== 'head_imam' && userRole !== 'admin') {
       return NextResponse.json(
-        { error: 'Only Head Imam can create preacher schedules' },
+        { error: 'Hanya Head Imam atau Admin boleh menguruskan jadual penceramah' },
         { status: 403 }
       );
     }
@@ -254,7 +254,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE - Delete a preacher schedule (Head Imam only)
+// DELETE - Delete a preacher schedule (Head Imam or Admin)
 export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -263,12 +263,12 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is head_imam
+    // Check if user is head_imam or admin
     const userRole = (session.user as any).role;
 
-    if (userRole !== 'head_imam') {
+    if (userRole !== 'head_imam' && userRole !== 'admin') {
       return NextResponse.json(
-        { error: 'Only Head Imam can delete preacher schedules' },
+        { error: 'Hanya Head Imam atau Admin boleh padam jadual penceramah' },
         { status: 403 }
       );
     }
