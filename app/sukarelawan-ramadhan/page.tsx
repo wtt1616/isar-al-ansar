@@ -17,7 +17,7 @@ export default function SukarelawanRamadhanPage() {
     no_telefon: '',
     zon_tempat_tinggal: '',
     size_baju: '',
-    hari_bertugas: ''
+    hari_bertugas: [] as string[]
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -52,17 +52,23 @@ export default function SukarelawanRamadhanPage() {
 
     // Validation
     if (!formData.nama_penuh || !formData.no_telefon || !formData.zon_tempat_tinggal ||
-        !formData.size_baju || !formData.hari_bertugas) {
+        !formData.size_baju || formData.hari_bertugas.length === 0) {
       setError('Sila lengkapkan semua maklumat yang diperlukan');
       setLoading(false);
       return;
     }
 
     try {
+      // Join multiple days with comma for storage
+      const submitData = {
+        ...formData,
+        hari_bertugas: formData.hari_bertugas.join(', '),
+        tahun: tahunAktif
+      };
       const res = await fetch('/api/sukarelawan-ramadhan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, tahun: tahunAktif })
+        body: JSON.stringify(submitData)
       });
 
       const data = await res.json();
@@ -305,30 +311,54 @@ export default function SukarelawanRamadhanPage() {
                     </label>
                     <p className="text-muted small mb-2">
                       <i className="bi bi-info-circle me-1"></i>
-                      Pihak surau tidak menjamin hari yang dipilih dan mungkin akan menukarnya mengikut keperluan.
+                      Boleh pilih lebih dari satu hari. Pihak surau tidak menjamin hari yang dipilih dan mungkin akan menukarnya mengikut keperluan.
                     </p>
                     <div className="row g-2">
-                      {hariOptions.map((hari) => (
-                        <div key={hari} className="col-6 col-md-3">
-                          <input
-                            type="radio"
-                            className="btn-check"
-                            name="hari_bertugas"
-                            id={`hari-${hari}`}
-                            value={hari}
-                            checked={formData.hari_bertugas === hari}
-                            onChange={handleChange}
-                            required
-                          />
-                          <label
-                            className={`btn w-100 ${hari === 'Setiap Hari' ? 'btn-outline-primary' : 'btn-outline-success'}`}
-                            htmlFor={`hari-${hari}`}
-                          >
-                            {hari}
-                          </label>
-                        </div>
-                      ))}
+                      {hariOptions.map((hari) => {
+                        const isSelected = formData.hari_bertugas.includes(hari);
+                        return (
+                          <div key={hari} className="col-6 col-md-3">
+                            <input
+                              type="checkbox"
+                              className="btn-check"
+                              id={`hari-${hari}`}
+                              value={hari}
+                              checked={isSelected}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  // Add to array
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    hari_bertugas: [...prev.hari_bertugas, hari]
+                                  }));
+                                } else {
+                                  // Remove from array
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    hari_bertugas: prev.hari_bertugas.filter(h => h !== hari)
+                                  }));
+                                }
+                              }}
+                            />
+                            <label
+                              className={`btn w-100 ${isSelected ? (hari === 'Setiap Hari' ? 'btn-primary' : 'btn-success') : (hari === 'Setiap Hari' ? 'btn-outline-primary' : 'btn-outline-success')}`}
+                              htmlFor={`hari-${hari}`}
+                            >
+                              {isSelected && <i className="bi bi-check-lg me-1"></i>}
+                              {hari}
+                            </label>
+                          </div>
+                        );
+                      })}
                     </div>
+                    {formData.hari_bertugas.length > 0 && (
+                      <div className="mt-2">
+                        <small className="text-success">
+                          <i className="bi bi-check-circle me-1"></i>
+                          Dipilih: {formData.hari_bertugas.join(', ')}
+                        </small>
+                      </div>
+                    )}
                   </div>
 
                   {/* Submit Button */}
