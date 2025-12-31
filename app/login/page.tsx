@@ -697,6 +697,38 @@ export default function LoginPage() {
               <i className="bi bi-question-circle"></i>
               <span style={{ fontSize: '0.6rem', marginTop: '2px', lineHeight: '1.1' }}>Bantuan</span>
             </a>
+            <a
+              href="/sukarelawan-ramadhan"
+              className="btn btn-outline-success d-flex flex-column align-items-center justify-content-center"
+              style={{
+                minWidth: '48px',
+                height: 'auto',
+                borderRadius: '0.5rem',
+                fontSize: '1.1rem',
+                padding: '0.4rem 0.3rem'
+              }}
+            >
+              <i className="bi bi-person-raised-hand"></i>
+              <span style={{ fontSize: '0.55rem', marginTop: '2px', lineHeight: '1.1' }}>Sukarelawan</span>
+            </a>
+            <a
+              href="/sukarelawan-ramadhan-muslimat"
+              className="btn d-flex flex-column align-items-center justify-content-center"
+              style={{
+                minWidth: '48px',
+                height: 'auto',
+                borderRadius: '0.5rem',
+                fontSize: '1.1rem',
+                padding: '0.4rem 0.3rem',
+                borderColor: '#9c4d8b',
+                color: '#9c4d8b',
+                borderWidth: '1px',
+                borderStyle: 'solid'
+              }}
+            >
+              <i className="bi bi-person-raised-hand"></i>
+              <span style={{ fontSize: '0.55rem', marginTop: '2px', lineHeight: '1.1' }}>Muslimat</span>
+            </a>
             <button
               className="btn btn-success d-flex flex-column align-items-center justify-content-center"
               onClick={() => setShowLoginModal(true)}
