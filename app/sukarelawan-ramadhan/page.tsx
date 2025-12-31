@@ -183,6 +183,38 @@ export default function SukarelawanRamadhanPage() {
               </p>
             </div>
 
+            {/* Info Card */}
+            <div className="card shadow-lg border-0 mb-4">
+              <div className="card-body p-4" style={{ fontSize: '0.85rem' }}>
+                <p className="mb-3">
+                  Sebagai persediaan menghadapi ketibaan bulan Ramadhan yang mulia, seperti tahun-tahun sebelum ini pihak Surau Al-Ansar akan membuka peluang kepada para ahli kariah untuk menjadi <strong>SUKARELAWAN RAMADHAN</strong>. Iftar tahun {tahunAktif} akan disediakan secara buffet dan pek moreh dan berikut adalah antara bidang tugas SUKARELAWAN:
+                </p>
+
+                <div className="mb-3">
+                  <p className="fw-bold text-success mb-2">
+                    A. SEBELUM BERBUKA (SUKARELAWAN MULA HADIR KE SAA PUKUL 6:00 PETANG)
+                  </p>
+                  <ol className="mb-0 ps-3">
+                    <li>Menghampar tikar untuk Jemaah berbuka.</li>
+                    <li>Menyusun bekas makanan dan minuman dan memastikan semua peralatan katerer tersedia di meja hidangan muslimin dan muslimat.</li>
+                    <li>Memastikan plastik sampah telah disediakan dalam tong sampah di kawasan muslimin dan muslimat.</li>
+                    <li>Jemaah boleh mula mengambil makanan setengah jam sebelum waktu berbuka dan sukarelawan akan mengendalikan agihan makanan.</li>
+                    <li>Memastikan tiada aktiviti membungkus makanan sebelum waktu berbuka.</li>
+                  </ol>
+                </div>
+
+                <div>
+                  <p className="fw-bold text-success mb-2">
+                    B. SELEPAS BERBUKA
+                  </p>
+                  <ol className="mb-0 ps-3">
+                    <li>Mengulung tikar dan membersihkan kawasan jemaah berbuka.</li>
+                    <li>Membungkus makanan yang berlebihan (jika ada) untuk para Jemaah.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
             {/* Form Card */}
             <div className="card shadow-lg border-0">
               <div className="card-header bg-success text-white py-3">
