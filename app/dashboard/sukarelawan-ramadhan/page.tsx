@@ -35,24 +35,35 @@ interface SizeStat {
 }
 
 interface SettingsData {
-  sukarelawan_tahun_aktif: number;
-  sukarelawan_pendaftaran_aktif: boolean;
-  sukarelawan_hari_options: string; // comma-separated enabled days
+  tahun_aktif: number;
+  pendaftaran_aktif: boolean;
+  hari_options: string;
 }
 
 const HARI_OPTIONS = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad', 'Setiap Hari'];
 const ZON_OPTIONS = ['Zon 2', 'Zon 3', 'Zon 4', 'AEE'];
 const SIZE_OPTIONS = ['2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '5XL', '7XL'];
 
-export default function SukarelawanRamadhanAdminPage() {
+type TabType = 'muslimin' | 'muslimat';
+
+export default function SukarelawanRamadhanCombinedPage() {
   const { data: session, status: authStatus } = useSession();
   const router = useRouter();
   const currentYear = new Date().getFullYear();
 
-  const [data, setData] = useState<Sukarelawan[]>([]);
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [hariStats, setHariStats] = useState<HariStat[]>([]);
-  const [sizeStats, setSizeStats] = useState<SizeStat[]>([]);
+  // Tab state
+  const [activeTab, setActiveTab] = useState<TabType>('muslimin');
+
+  // Data states for both tabs
+  const [musliminData, setMusliminData] = useState<Sukarelawan[]>([]);
+  const [muslimatData, setMuslimatData] = useState<Sukarelawan[]>([]);
+  const [musliminStats, setMusliminStats] = useState<Stats | null>(null);
+  const [muslimatStats, setMuslimatStats] = useState<Stats | null>(null);
+  const [musliminHariStats, setMusliminHariStats] = useState<HariStat[]>([]);
+  const [muslimatHariStats, setMuslimatHariStats] = useState<HariStat[]>([]);
+  const [musliminSizeStats, setMusliminSizeStats] = useState<SizeStat[]>([]);
+  const [muslimatSizeStats, setMuslimatSizeStats] = useState<SizeStat[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [tahun, setTahun] = useState(currentYear.toString());
   const [statusFilter, setStatusFilter] = useState('all');
@@ -61,11 +72,16 @@ export default function SukarelawanRamadhanAdminPage() {
   const [showModal, setShowModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Settings state
-  const [settings, setSettings] = useState<SettingsData>({
-    sukarelawan_tahun_aktif: currentYear,
-    sukarelawan_pendaftaran_aktif: true,
-    sukarelawan_hari_options: HARI_OPTIONS.join(',')
+  // Settings states for both
+  const [musliminSettings, setMusliminSettings] = useState<SettingsData>({
+    tahun_aktif: currentYear,
+    pendaftaran_aktif: true,
+    hari_options: HARI_OPTIONS.join(',')
+  });
+  const [muslimatSettings, setMuslimatSettings] = useState<SettingsData>({
+    tahun_aktif: currentYear,
+    pendaftaran_aktif: true,
+    hari_options: HARI_OPTIONS.join(',')
   });
   const [settingsLoading, setSettingsLoading] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -81,6 +97,18 @@ export default function SukarelawanRamadhanAdminPage() {
     hari_bertugas: ''
   });
 
+  // Get current data based on active tab
+  const data = activeTab === 'muslimin' ? musliminData : muslimatData;
+  const stats = activeTab === 'muslimin' ? musliminStats : muslimatStats;
+  const hariStats = activeTab === 'muslimin' ? musliminHariStats : muslimatHariStats;
+  const sizeStats = activeTab === 'muslimin' ? musliminSizeStats : muslimatSizeStats;
+  const settings = activeTab === 'muslimin' ? musliminSettings : muslimatSettings;
+  const setSettings = activeTab === 'muslimin' ? setMusliminSettings : setMuslimatSettings;
+
+  // Theme colors
+  const themeColor = activeTab === 'muslimin' ? '#198754' : '#9c4d8b';
+  const themeBgLight = activeTab === 'muslimin' ? '#d1e7dd' : '#f8f0f6';
+
   useEffect(() => {
     if (authStatus === 'unauthenticated') {
       router.push('/login');
@@ -89,19 +117,32 @@ export default function SukarelawanRamadhanAdminPage() {
 
   useEffect(() => {
     if (session?.user?.role === 'admin') {
-      fetchSettings();
-      fetchData();
+      fetchAllSettings();
+      fetchAllData();
     }
   }, [session, tahun, statusFilter, hariFilter]);
 
-  const fetchSettings = async () => {
+  const fetchAllSettings = async () => {
     try {
-      const res = await fetch('/api/settings/sukarelawan');
-      const data = await res.json();
-      setSettings({
-        sukarelawan_tahun_aktif: data.sukarelawan_tahun_aktif || currentYear,
-        sukarelawan_pendaftaran_aktif: data.sukarelawan_pendaftaran_aktif !== false,
-        sukarelawan_hari_options: data.sukarelawan_hari_options || HARI_OPTIONS.join(',')
+      // Fetch both settings in parallel
+      const [musliminRes, muslimatRes] = await Promise.all([
+        fetch('/api/settings/sukarelawan'),
+        fetch('/api/settings/sukarelawan-muslimat')
+      ]);
+
+      const musliminData = await musliminRes.json();
+      const muslimatData = await muslimatRes.json();
+
+      setMusliminSettings({
+        tahun_aktif: musliminData.sukarelawan_tahun_aktif || currentYear,
+        pendaftaran_aktif: musliminData.sukarelawan_pendaftaran_aktif !== false,
+        hari_options: musliminData.sukarelawan_hari_options || HARI_OPTIONS.join(',')
+      });
+
+      setMuslimatSettings({
+        tahun_aktif: muslimatData.sukarelawan_muslimat_tahun_aktif || currentYear,
+        pendaftaran_aktif: muslimatData.sukarelawan_muslimat_pendaftaran_aktif !== false,
+        hari_options: muslimatData.sukarelawan_muslimat_hari_options || HARI_OPTIONS.join(',')
       });
     } catch (error) {
       console.error('Error fetching settings:', error);
@@ -111,14 +152,18 @@ export default function SukarelawanRamadhanAdminPage() {
   const saveSettings = async () => {
     try {
       setSettingsLoading(true);
-      const res = await fetch('/api/settings/sukarelawan', {
+      const endpoint = activeTab === 'muslimin'
+        ? '/api/settings/sukarelawan'
+        : '/api/settings/sukarelawan-muslimat';
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          tahun_aktif: settings.sukarelawan_tahun_aktif,
-          pendaftaran_aktif: settings.sukarelawan_pendaftaran_aktif,
-          hari_options: settings.sukarelawan_hari_options
+          tahun_aktif: settings.tahun_aktif,
+          pendaftaran_aktif: settings.pendaftaran_aktif,
+          hari_options: settings.hari_options
         })
       });
 
@@ -127,8 +172,7 @@ export default function SukarelawanRamadhanAdminPage() {
       if (res.ok && data.success) {
         setShowSettingsModal(false);
         alert('Tetapan berjaya dikemaskini');
-        // Refresh settings
-        fetchSettings();
+        fetchAllSettings();
       } else {
         alert('Ralat: ' + (data.error || 'Gagal kemaskini tetapan'));
       }
@@ -140,7 +184,7 @@ export default function SukarelawanRamadhanAdminPage() {
     }
   };
 
-  const fetchData = async () => {
+  const fetchAllData = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -148,12 +192,25 @@ export default function SukarelawanRamadhanAdminPage() {
         status: statusFilter,
         hari: hariFilter
       });
-      const res = await fetch(`/api/sukarelawan-ramadhan?${params}`);
-      const result = await res.json();
-      setData(result.data || []);
-      setStats(result.stats || null);
-      setHariStats(result.hariStats || []);
-      setSizeStats(result.sizeStats || []);
+
+      // Fetch both data in parallel
+      const [musliminRes, muslimatRes] = await Promise.all([
+        fetch(`/api/sukarelawan-ramadhan?${params}`),
+        fetch(`/api/sukarelawan-ramadhan-muslimat?${params}`)
+      ]);
+
+      const musliminResult = await musliminRes.json();
+      const muslimatResult = await muslimatRes.json();
+
+      setMusliminData(musliminResult.data || []);
+      setMusliminStats(musliminResult.stats || null);
+      setMusliminHariStats(musliminResult.hariStats || []);
+      setMusliminSizeStats(musliminResult.sizeStats || []);
+
+      setMuslimatData(muslimatResult.data || []);
+      setMuslimatStats(muslimatResult.stats || null);
+      setMuslimatHariStats(muslimatResult.hariStats || []);
+      setMuslimatSizeStats(muslimatResult.sizeStats || []);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -164,14 +221,18 @@ export default function SukarelawanRamadhanAdminPage() {
   const handleStatusChange = async (id: number, newStatus: string, catatan?: string) => {
     try {
       setActionLoading(true);
-      const res = await fetch('/api/sukarelawan-ramadhan', {
+      const endpoint = activeTab === 'muslimin'
+        ? '/api/sukarelawan-ramadhan'
+        : '/api/sukarelawan-ramadhan-muslimat';
+
+      const res = await fetch(endpoint, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, status: newStatus, catatan })
       });
 
       if (res.ok) {
-        fetchData();
+        fetchAllData();
         setShowModal(false);
         setSelectedItem(null);
       }
@@ -186,12 +247,16 @@ export default function SukarelawanRamadhanAdminPage() {
     if (!confirm('Adakah anda pasti mahu memadam pendaftaran ini?')) return;
 
     try {
-      const res = await fetch(`/api/sukarelawan-ramadhan?id=${id}`, {
+      const endpoint = activeTab === 'muslimin'
+        ? `/api/sukarelawan-ramadhan?id=${id}`
+        : `/api/sukarelawan-ramadhan-muslimat?id=${id}`;
+
+      const res = await fetch(endpoint, {
         method: 'DELETE'
       });
 
       if (res.ok) {
-        fetchData();
+        fetchAllData();
       }
     } catch (error) {
       console.error('Error deleting:', error);
@@ -213,7 +278,11 @@ export default function SukarelawanRamadhanAdminPage() {
   const handleSaveEdit = async () => {
     try {
       setActionLoading(true);
-      const res = await fetch('/api/sukarelawan-ramadhan', {
+      const endpoint = activeTab === 'muslimin'
+        ? '/api/sukarelawan-ramadhan'
+        : '/api/sukarelawan-ramadhan-muslimat';
+
+      const res = await fetch(endpoint, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -227,7 +296,7 @@ export default function SukarelawanRamadhanAdminPage() {
       });
 
       if (res.ok) {
-        fetchData();
+        fetchAllData();
         setShowEditModal(false);
         alert('Rekod berjaya dikemaskini');
       } else {
@@ -247,7 +316,10 @@ export default function SukarelawanRamadhanAdminPage() {
       tahun,
       status: statusFilter
     });
-    window.open(`/api/sukarelawan-ramadhan/export?${params}`, '_blank');
+    const endpoint = activeTab === 'muslimin'
+      ? `/api/sukarelawan-ramadhan/export?${params}`
+      : `/api/sukarelawan-ramadhan-muslimat/export?${params}`;
+    window.open(endpoint, '_blank');
   };
 
   const getStatusBadge = (status: string) => {
@@ -265,7 +337,7 @@ export default function SukarelawanRamadhanAdminPage() {
     return (
       <div className="container py-4">
         <div className="d-flex justify-content-center">
-          <div className="spinner-border" role="status">
+          <div className="spinner-border" role="status" style={{ color: themeColor }}>
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -287,7 +359,7 @@ export default function SukarelawanRamadhanAdminPage() {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h4 className="mb-1">
-            <i className="bi bi-people-fill text-success me-2"></i>
+            <i className="bi bi-people-fill me-2" style={{ color: themeColor }}></i>
             Sukarelawan Ramadhan {tahun}
           </h4>
           <p className="text-muted mb-0">Pengurusan pendaftaran sukarelawan</p>
@@ -296,12 +368,48 @@ export default function SukarelawanRamadhanAdminPage() {
           <button className="btn btn-outline-primary" onClick={() => setShowSettingsModal(true)}>
             <i className="bi bi-gear me-1"></i> Tetapan
           </button>
-          <button className="btn btn-success" onClick={handleExport}>
+          <button className="btn" style={{ backgroundColor: themeColor, color: 'white' }} onClick={handleExport}>
             <i className="bi bi-file-earmark-excel me-1"></i> Export Excel
           </button>
-          <button className="btn btn-outline-secondary" onClick={() => router.back()}>
-            <i className="bi bi-arrow-left me-1"></i> Kembali
-          </button>
+        </div>
+      </div>
+
+      {/* Tab Switcher */}
+      <div className="card mb-4">
+        <div className="card-body p-2">
+          <ul className="nav nav-pills nav-fill">
+            <li className="nav-item">
+              <button
+                className={`nav-link d-flex align-items-center justify-content-center gap-2 ${activeTab === 'muslimin' ? 'active' : ''}`}
+                style={activeTab === 'muslimin' ? { backgroundColor: '#198754' } : {}}
+                onClick={() => setActiveTab('muslimin')}
+              >
+                <i className="bi bi-person-standing"></i>
+                <span>Muslimin</span>
+                {musliminStats && (
+                  <span className={`badge ${activeTab === 'muslimin' ? 'bg-light text-success' : 'bg-success text-white'}`}>
+                    {musliminStats.total}
+                  </span>
+                )}
+              </button>
+            </li>
+            <li className="nav-item">
+              <button
+                className={`nav-link d-flex align-items-center justify-content-center gap-2 ${activeTab === 'muslimat' ? 'active' : ''}`}
+                style={activeTab === 'muslimat' ? { backgroundColor: '#9c4d8b' } : {}}
+                onClick={() => setActiveTab('muslimat')}
+              >
+                <i className="bi bi-person-standing-dress"></i>
+                <span>Muslimat</span>
+                {muslimatStats && (
+                  <span className={`badge ${activeTab === 'muslimat' ? 'bg-light' : 'bg-secondary'}`}
+                        style={activeTab === 'muslimat' ? { color: '#9c4d8b' } : {}}>
+                    {muslimatStats.total}
+                  </span>
+                )}
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -309,7 +417,7 @@ export default function SukarelawanRamadhanAdminPage() {
       {stats && (
         <div className="row g-3 mb-4">
           <div className="col-6 col-md-3">
-            <div className="card bg-primary text-white h-100">
+            <div className="card text-white h-100" style={{ backgroundColor: themeColor }}>
               <div className="card-body">
                 <div className="d-flex justify-content-between">
                   <div>
@@ -367,9 +475,9 @@ export default function SukarelawanRamadhanAdminPage() {
       <div className="alert alert-light border mb-4 d-flex align-items-center justify-content-between">
         <div>
           <i className="bi bi-info-circle me-2"></i>
-          <strong>Borang Awam:</strong>{' '}
-          Tahun <strong>{settings.sukarelawan_tahun_aktif}</strong> |{' '}
-          {settings.sukarelawan_pendaftaran_aktif ? (
+          <strong>Borang Awam {activeTab === 'muslimin' ? 'Muslimin' : 'Muslimat'}:</strong>{' '}
+          Tahun <strong>{settings.tahun_aktif}</strong> |{' '}
+          {settings.pendaftaran_aktif ? (
             <span className="text-success">
               <i className="bi bi-check-circle me-1"></i>Dibuka
             </span>
@@ -392,8 +500,8 @@ export default function SukarelawanRamadhanAdminPage() {
         {/* Hari Stats */}
         <div className="col-md-6">
           <div className="card h-100">
-            <div className="card-header">
-              <i className="bi bi-calendar-week me-1"></i> Statistik Hari Bertugas (Diluluskan)
+            <div className="card-header" style={{ backgroundColor: themeBgLight }}>
+              <i className="bi bi-calendar-week me-1" style={{ color: themeColor }}></i> Statistik Hari Bertugas (Diluluskan)
             </div>
             <div className="card-body">
               <div className="row g-2">
@@ -416,8 +524,8 @@ export default function SukarelawanRamadhanAdminPage() {
         {/* Size Stats */}
         <div className="col-md-6">
           <div className="card h-100">
-            <div className="card-header">
-              <i className="bi bi-tag me-1"></i> Statistik Size Baju (Diluluskan)
+            <div className="card-header" style={{ backgroundColor: themeBgLight }}>
+              <i className="bi bi-tag me-1" style={{ color: themeColor }}></i> Statistik Size Baju (Diluluskan)
             </div>
             <div className="card-body">
               <div className="row g-2">
@@ -478,7 +586,7 @@ export default function SukarelawanRamadhanAdminPage() {
               </select>
             </div>
             <div className="col-md-3">
-              <button className="btn btn-outline-primary w-100" onClick={fetchData}>
+              <button className="btn btn-outline-primary w-100" onClick={fetchAllData}>
                 <i className="bi bi-arrow-clockwise me-1"></i> Muat Semula
               </button>
             </div>
@@ -524,7 +632,7 @@ export default function SukarelawanRamadhanAdminPage() {
                         </a>
                       </td>
                       <td>{item.zon_tempat_tinggal}</td>
-                      <td><span className="badge bg-secondary">{item.size_baju}</span></td>
+                      <td><span className="badge" style={{ backgroundColor: themeColor }}>{item.size_baju}</span></td>
                       <td>{item.hari_bertugas}</td>
                       <td>{getStatusBadge(item.status)}</td>
                       <td className="small">
@@ -712,7 +820,8 @@ export default function SukarelawanRamadhanAdminPage() {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="btn"
+                  style={{ backgroundColor: themeColor, color: 'white' }}
                   onClick={handleSaveEdit}
                   disabled={actionLoading}
                 >
@@ -732,7 +841,7 @@ export default function SukarelawanRamadhanAdminPage() {
               <div className="modal-header">
                 <h5 className="modal-title">
                   <i className="bi bi-gear me-2"></i>
-                  Tetapan Pendaftaran Sukarelawan
+                  Tetapan {activeTab === 'muslimin' ? 'Muslimin' : 'Muslimat'}
                 </h5>
                 <button className="btn-close" onClick={() => setShowSettingsModal(false)}></button>
               </div>
@@ -742,10 +851,10 @@ export default function SukarelawanRamadhanAdminPage() {
                   <input
                     type="number"
                     className="form-control"
-                    value={settings.sukarelawan_tahun_aktif}
+                    value={settings.tahun_aktif}
                     onChange={(e) => setSettings(prev => ({
                       ...prev,
-                      sukarelawan_tahun_aktif: parseInt(e.target.value, 10) || currentYear
+                      tahun_aktif: parseInt(e.target.value, 10) || currentYear
                     }))}
                     min="2020"
                     max="2100"
@@ -763,14 +872,14 @@ export default function SukarelawanRamadhanAdminPage() {
                       type="checkbox"
                       className="form-check-input"
                       id="pendaftaranSwitch"
-                      checked={settings.sukarelawan_pendaftaran_aktif}
+                      checked={settings.pendaftaran_aktif}
                       onChange={(e) => setSettings(prev => ({
                         ...prev,
-                        sukarelawan_pendaftaran_aktif: e.target.checked
+                        pendaftaran_aktif: e.target.checked
                       }))}
                     />
                     <label className="form-check-label" htmlFor="pendaftaranSwitch">
-                      {settings.sukarelawan_pendaftaran_aktif ? (
+                      {settings.pendaftaran_aktif ? (
                         <span className="text-success fw-medium">
                           <i className="bi bi-check-circle me-1"></i>
                           Pendaftaran Dibuka
@@ -795,7 +904,7 @@ export default function SukarelawanRamadhanAdminPage() {
                   </div>
                   <div className="row g-2">
                     {HARI_OPTIONS.map(hari => {
-                      const enabledDays = settings.sukarelawan_hari_options.split(',').map(d => d.trim());
+                      const enabledDays = settings.hari_options.split(',').map(d => d.trim());
                       const isEnabled = enabledDays.includes(hari);
                       return (
                         <div key={hari} className="col-6">
@@ -806,18 +915,16 @@ export default function SukarelawanRamadhanAdminPage() {
                               id={`hari-${hari}`}
                               checked={isEnabled}
                               onChange={(e) => {
-                                const currentDays = settings.sukarelawan_hari_options.split(',').map(d => d.trim()).filter(d => d);
+                                const currentDays = settings.hari_options.split(',').map(d => d.trim()).filter(d => d);
                                 let newDays: string[];
                                 if (e.target.checked) {
-                                  // Add day, maintain order
                                   newDays = HARI_OPTIONS.filter(h => currentDays.includes(h) || h === hari);
                                 } else {
-                                  // Remove day
                                   newDays = currentDays.filter(d => d !== hari);
                                 }
                                 setSettings(prev => ({
                                   ...prev,
-                                  sukarelawan_hari_options: newDays.join(',')
+                                  hari_options: newDays.join(',')
                                 }));
                               }}
                             />
@@ -831,11 +938,13 @@ export default function SukarelawanRamadhanAdminPage() {
                   </div>
                 </div>
 
-                <div className="alert alert-info mb-0">
-                  <i className="bi bi-info-circle me-2"></i>
+                <div className="alert mb-0" style={{ backgroundColor: themeBgLight, borderColor: themeColor }}>
+                  <i className="bi bi-info-circle me-2" style={{ color: themeColor }}></i>
                   <strong>Link borang awam:</strong>
                   <br />
-                  <code className="user-select-all">{typeof window !== 'undefined' ? window.location.origin : ''}/sukarelawan-ramadhan</code>
+                  <code className="user-select-all">
+                    {typeof window !== 'undefined' ? window.location.origin : ''}/sukarelawan-ramadhan{activeTab === 'muslimat' ? '-muslimat' : ''}
+                  </code>
                 </div>
               </div>
               <div className="modal-footer">
@@ -848,7 +957,8 @@ export default function SukarelawanRamadhanAdminPage() {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="btn"
+                  style={{ backgroundColor: themeColor, color: 'white' }}
                   onClick={saveSettings}
                   disabled={settingsLoading}
                 >
