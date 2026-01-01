@@ -500,11 +500,42 @@ export default function PreacherSchedulesPage() {
                             {dayData.isCurrentMonth && (() => {
                               const dayOfWeek = dayData.date.getDay(); // 0=Sunday, 1=Monday, 4=Thursday, 5=Friday
 
-                              // Monday (1) - No preaching
+                              // Monday (1) - Kuliah Maghrib only
                               if (dayOfWeek === 1) {
                                 return (
-                                  <div className="preacher-slots text-center">
-                                    <small className="text-muted">No Preaching</small>
+                                  <div className="preacher-slots">
+                                    <div className="slot">
+                                      <small className="text-muted d-block">Kuliah Maghrib</small>
+                                      {isHeadImam ? (
+                                        <>
+                                          <select
+                                            className="form-select form-select-sm no-print"
+                                            value={schedule?.maghrib_preacher_id || ''}
+                                            onChange={(e) =>
+                                              handlePreacherChange(
+                                                dayData.dateString,
+                                                'maghrib',
+                                                e.target.value ? parseInt(e.target.value) : null
+                                              )
+                                            }
+                                          >
+                                            <option value="">-</option>
+                                            {preachers.map((p) => (
+                                              <option key={p.id} value={p.id}>
+                                                {p.name}
+                                              </option>
+                                            ))}
+                                          </select>
+                                          <div className="small print-only">
+                                            {renderPreacherInfo(schedule?.maghrib_preacher_id || null)}
+                                          </div>
+                                        </>
+                                      ) : (
+                                        <div className="small">
+                                          {renderPreacherInfo(schedule?.maghrib_preacher_id || null)}
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 );
                               }
@@ -581,7 +612,7 @@ export default function PreacherSchedulesPage() {
                                 );
                               }
 
-                              // Friday (5) - Kuliah Dhuha and Friday Preach
+                              // Friday (5) - Kuliah Dhuha, Tazkirah Jumaat, and Kuliah Maghrib
                               if (dayOfWeek === 5) {
                                 return (
                                   <div className="preacher-slots">
@@ -617,7 +648,7 @@ export default function PreacherSchedulesPage() {
                                         </div>
                                       )}
                                     </div>
-                                    <div className="slot">
+                                    <div className="slot mb-2">
                                       <small className="text-muted d-block">Tazkirah Jumaat</small>
                                       {isHeadImam ? (
                                         <>
@@ -646,6 +677,38 @@ export default function PreacherSchedulesPage() {
                                       ) : (
                                         <div className="small">
                                           {renderPreacherInfo(schedule?.friday_preacher_id || null)}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="slot">
+                                      <small className="text-muted d-block">Kuliah Maghrib</small>
+                                      {isHeadImam ? (
+                                        <>
+                                          <select
+                                            className="form-select form-select-sm no-print"
+                                            value={schedule?.maghrib_preacher_id || ''}
+                                            onChange={(e) =>
+                                              handlePreacherChange(
+                                                dayData.dateString,
+                                                'maghrib',
+                                                e.target.value ? parseInt(e.target.value) : null
+                                              )
+                                            }
+                                          >
+                                            <option value="">-</option>
+                                            {preachers.map((p) => (
+                                              <option key={p.id} value={p.id}>
+                                                {p.name}
+                                              </option>
+                                            ))}
+                                          </select>
+                                          <div className="small print-only">
+                                            {renderPreacherInfo(schedule?.maghrib_preacher_id || null)}
+                                          </div>
+                                        </>
+                                      ) : (
+                                        <div className="small">
+                                          {renderPreacherInfo(schedule?.maghrib_preacher_id || null)}
                                         </div>
                                       )}
                                     </div>
@@ -786,13 +849,39 @@ export default function PreacherSchedulesPage() {
                       const dayName = day.date.toLocaleDateString('en-US', { weekday: 'long' });
                       const dayOfWeek = day.date.getDay();
 
-                      // Monday (1) - No preaching
+                      // Monday (1) - Kuliah Maghrib only
                       if (dayOfWeek === 1) {
                         return (
-                          <tr key={day.dateString} className="table-secondary">
+                          <tr key={day.dateString}>
                             <td>{day.date.getDate()}</td>
                             <td>{dayName}</td>
-                            <td className="text-muted">No Preaching</td>
+                            <td>
+                              <div>
+                                <strong>Kuliah Maghrib:</strong>{' '}
+                                {isHeadImam ? (
+                                  <select
+                                    className="form-select d-inline-block w-auto"
+                                    value={schedule?.maghrib_preacher_id || ''}
+                                    onChange={(e) =>
+                                      handlePreacherChange(
+                                        day.dateString,
+                                        'maghrib',
+                                        e.target.value ? parseInt(e.target.value) : null
+                                      )
+                                    }
+                                  >
+                                    <option value="">-</option>
+                                    {preachers.map((p) => (
+                                      <option key={p.id} value={p.id}>
+                                        {p.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  renderPreacherInfo(schedule?.maghrib_preacher_id || null)
+                                )}
+                              </div>
+                            </td>
                           </tr>
                         );
                       }
@@ -859,7 +948,7 @@ export default function PreacherSchedulesPage() {
                         );
                       }
 
-                      // Friday (5) - Kuliah Dhuha and Khutbah Jumaat
+                      // Friday (5) - Kuliah Dhuha, Tazkirah Jumaat, and Kuliah Maghrib
                       if (dayOfWeek === 5) {
                         return (
                           <tr key={day.dateString}>
@@ -891,7 +980,7 @@ export default function PreacherSchedulesPage() {
                                   renderPreacherInfo(schedule?.friday_dhuha_preacher_id || null)
                                 )}
                               </div>
-                              <div>
+                              <div className="mb-2">
                                 <strong>Tazkirah Jumaat:</strong>{' '}
                                 {isHeadImam ? (
                                   <select
@@ -914,6 +1003,31 @@ export default function PreacherSchedulesPage() {
                                   </select>
                                 ) : (
                                   renderPreacherInfo(schedule?.friday_preacher_id || null)
+                                )}
+                              </div>
+                              <div>
+                                <strong>Kuliah Maghrib:</strong>{' '}
+                                {isHeadImam ? (
+                                  <select
+                                    className="form-select d-inline-block w-auto"
+                                    value={schedule?.maghrib_preacher_id || ''}
+                                    onChange={(e) =>
+                                      handlePreacherChange(
+                                        day.dateString,
+                                        'maghrib',
+                                        e.target.value ? parseInt(e.target.value) : null
+                                      )
+                                    }
+                                  >
+                                    <option value="">-</option>
+                                    {preachers.map((p) => (
+                                      <option key={p.id} value={p.id}>
+                                        {p.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  renderPreacherInfo(schedule?.maghrib_preacher_id || null)
                                 )}
                               </div>
                             </td>
@@ -1139,10 +1253,6 @@ export default function PreacherSchedulesPage() {
                 {calendarDays
                   .filter((day) => day.isCurrentMonth)
                   .map((day) => {
-                    const dayOfWeek = day.date.getDay();
-                    // Skip Monday (1) - No preaching
-                    if (dayOfWeek === 1) return null;
-
                     const dayName = day.date.toLocaleDateString('ms-MY', { weekday: 'long', day: 'numeric', month: 'long' });
                     return (
                       <option key={day.dateString} value={day.dateString}>
@@ -1161,15 +1271,23 @@ export default function PreacherSchedulesPage() {
               const schedule = schedules.get(selectedDateForBanner);
               const isFriday = dayOfWeek === 5;
               const isThursday = dayOfWeek === 4;
+              const isMonday = dayOfWeek === 1;
               const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
               // Define slots based on day
               let slots: { key: string; label: string; bannerKey: keyof Schedule }[] = [];
 
-              if (isFriday) {
+              if (isMonday) {
+                // Monday - Kuliah Maghrib only
+                slots = [
+                  { key: 'maghrib', label: 'Kuliah Maghrib', bannerKey: 'maghrib_banner' }
+                ];
+              } else if (isFriday) {
+                // Friday - Kuliah Dhuha, Tazkirah Jumaat, and Kuliah Maghrib
                 slots = [
                   { key: 'friday_dhuha', label: 'Kuliah Dhuha Jumaat', bannerKey: 'friday_dhuha_banner' },
-                  { key: 'friday', label: 'Tazkirah Jumaat', bannerKey: 'friday_banner' }
+                  { key: 'friday', label: 'Tazkirah Jumaat', bannerKey: 'friday_banner' },
+                  { key: 'maghrib', label: 'Kuliah Maghrib', bannerKey: 'maghrib_banner' }
                 ];
               } else if (isThursday) {
                 // Thursday - Kuliah Subuh and Kuliah Maghrib
@@ -1178,6 +1296,7 @@ export default function PreacherSchedulesPage() {
                   { key: 'maghrib', label: 'Kuliah Maghrib', bannerKey: 'maghrib_banner' }
                 ];
               } else {
+                // Other days - Subuh, Dhuha (weekend), and Maghrib
                 slots = [
                   { key: 'subuh', label: 'Kuliah Subuh', bannerKey: 'subuh_banner' },
                   { key: 'maghrib', label: 'Kuliah Maghrib', bannerKey: 'maghrib_banner' }
