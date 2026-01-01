@@ -29,11 +29,15 @@ export async function GET(request: NextRequest) {
         ps.maghrib_preacher_id,
         ps.friday_preacher_id,
         ps.friday_dhuha_preacher_id,
+        ps.yasin_kahfi_preacher_id,
+        ps.kahfi_muslimat_preacher_id,
         ps.subuh_banner,
         ps.dhuha_banner,
         ps.maghrib_banner,
         ps.friday_banner,
         ps.friday_dhuha_banner,
+        ps.yasin_kahfi_banner,
+        ps.kahfi_muslimat_banner,
         sp.name as subuh_preacher_name,
         sp.photo as subuh_preacher_photo,
         dp.name as dhuha_preacher_name,
@@ -44,6 +48,10 @@ export async function GET(request: NextRequest) {
         fp.photo as friday_preacher_photo,
         fdp.name as friday_dhuha_preacher_name,
         fdp.photo as friday_dhuha_preacher_photo,
+        ykp.name as yasin_kahfi_preacher_name,
+        ykp.photo as yasin_kahfi_preacher_photo,
+        kmp.name as kahfi_muslimat_preacher_name,
+        kmp.photo as kahfi_muslimat_preacher_photo,
         ps.created_at,
         ps.updated_at
       FROM preacher_schedules ps
@@ -52,6 +60,8 @@ export async function GET(request: NextRequest) {
       LEFT JOIN preachers mp ON ps.maghrib_preacher_id = mp.id
       LEFT JOIN preachers fp ON ps.friday_preacher_id = fp.id
       LEFT JOIN preachers fdp ON ps.friday_dhuha_preacher_id = fdp.id
+      LEFT JOIN preachers ykp ON ps.yasin_kahfi_preacher_id = ykp.id
+      LEFT JOIN preachers kmp ON ps.kahfi_muslimat_preacher_id = kmp.id
     `;
 
     const params: any[] = [];
@@ -111,6 +121,8 @@ export async function GET(request: NextRequest) {
         maghrib_preacher_photo: formatPhotoUrl(schedule.maghrib_preacher_photo),
         friday_preacher_photo: formatPhotoUrl(schedule.friday_preacher_photo),
         friday_dhuha_preacher_photo: formatPhotoUrl(schedule.friday_dhuha_preacher_photo),
+        yasin_kahfi_preacher_photo: formatPhotoUrl(schedule.yasin_kahfi_preacher_photo),
+        kahfi_muslimat_preacher_photo: formatPhotoUrl(schedule.kahfi_muslimat_preacher_photo),
       };
     });
 
@@ -169,11 +181,15 @@ export async function POST(request: NextRequest) {
           maghrib_preacher_id,
           friday_preacher_id,
           friday_dhuha_preacher_id,
+          yasin_kahfi_preacher_id,
+          kahfi_muslimat_preacher_id,
           subuh_banner,
           dhuha_banner,
           maghrib_banner,
           friday_banner,
           friday_dhuha_banner,
+          yasin_kahfi_banner,
+          kahfi_muslimat_banner,
           notes
         } = schedule;
 
@@ -188,7 +204,9 @@ export async function POST(request: NextRequest) {
           await connection.query(
             `UPDATE preacher_schedules
              SET subuh_preacher_id = ?, dhuha_preacher_id = ?, maghrib_preacher_id = ?, friday_preacher_id = ?, friday_dhuha_preacher_id = ?,
+                 yasin_kahfi_preacher_id = ?, kahfi_muslimat_preacher_id = ?,
                  subuh_banner = ?, dhuha_banner = ?, maghrib_banner = ?, friday_banner = ?, friday_dhuha_banner = ?,
+                 yasin_kahfi_banner = ?, kahfi_muslimat_banner = ?,
                  notes = ?
              WHERE schedule_date = ?`,
             [
@@ -197,11 +215,15 @@ export async function POST(request: NextRequest) {
               maghrib_preacher_id || null,
               friday_preacher_id || null,
               friday_dhuha_preacher_id || null,
+              yasin_kahfi_preacher_id || null,
+              kahfi_muslimat_preacher_id || null,
               subuh_banner || null,
               dhuha_banner || null,
               maghrib_banner || null,
               friday_banner || null,
               friday_dhuha_banner || null,
+              yasin_kahfi_banner || null,
+              kahfi_muslimat_banner || null,
               notes || null,
               schedule_date
             ]
@@ -211,8 +233,10 @@ export async function POST(request: NextRequest) {
           await connection.query(
             `INSERT INTO preacher_schedules
              (schedule_date, subuh_preacher_id, dhuha_preacher_id, maghrib_preacher_id, friday_preacher_id, friday_dhuha_preacher_id,
-              subuh_banner, dhuha_banner, maghrib_banner, friday_banner, friday_dhuha_banner, notes, created_by)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              yasin_kahfi_preacher_id, kahfi_muslimat_preacher_id,
+              subuh_banner, dhuha_banner, maghrib_banner, friday_banner, friday_dhuha_banner,
+              yasin_kahfi_banner, kahfi_muslimat_banner, notes, created_by)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
               schedule_date,
               subuh_preacher_id || null,
@@ -220,11 +244,15 @@ export async function POST(request: NextRequest) {
               maghrib_preacher_id || null,
               friday_preacher_id || null,
               friday_dhuha_preacher_id || null,
+              yasin_kahfi_preacher_id || null,
+              kahfi_muslimat_preacher_id || null,
               subuh_banner || null,
               dhuha_banner || null,
               maghrib_banner || null,
               friday_banner || null,
               friday_dhuha_banner || null,
+              yasin_kahfi_banner || null,
+              kahfi_muslimat_banner || null,
               notes || null,
               userId
             ]
