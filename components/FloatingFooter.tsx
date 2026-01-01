@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
 const bankInfo = {
-  bank: 'Bank Islam',
+  bank: 'Maybank',
   accountName: 'Surau Al-Ansar',
-  accountNumber: '00000000000000', // TODO: Update with actual Al-Ansar bank account
+  accountNumber: '5648-5610-7697',
 };
 
 // Pages where footer should NOT be shown
@@ -18,7 +18,6 @@ const EXCLUDED_PAGES = [
 export default function FloatingFooter() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [showQR, setShowQR] = useState(false);
   const pathname = usePathname();
 
   // Check if current page should show the footer
@@ -36,47 +35,6 @@ export default function FloatingFooter() {
 
   return (
     <>
-      {/* QR Code Modal */}
-      {showQR && (
-        <div
-          className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-          style={{ backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1060 }}
-          onClick={() => setShowQR(false)}
-        >
-          <div
-            className="bg-white rounded-4 p-4 text-center shadow-lg"
-            style={{ maxWidth: '350px' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h6 className="mb-0 fw-bold text-success">
-                <i className="bi bi-qr-code me-2"></i>
-                Scan untuk Infaq
-              </h6>
-              <button
-                className="btn btn-sm btn-light"
-                onClick={() => setShowQR(false)}
-              >
-                <i className="bi bi-x-lg"></i>
-              </button>
-            </div>
-            <img
-              src="/qr_sar.jpeg"
-              alt="QR Code Infaq"
-              className="img-fluid rounded-3 shadow-sm mb-3"
-              style={{ maxWidth: '250px' }}
-            />
-            <p className="text-muted small mb-2">
-              Scan menggunakan Internet Banking atau E-wallet
-            </p>
-            <div className="bg-light rounded-3 p-2">
-              <small className="text-muted d-block">{bankInfo.bank} - {bankInfo.accountName}</small>
-              <strong className="text-success font-monospace">{bankInfo.accountNumber}</strong>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Floating Footer */}
       <div
         className="position-fixed bottom-0 start-0 end-0 d-print-none"
@@ -93,17 +51,6 @@ export default function FloatingFooter() {
           >
             <div className="p-3">
               <div className="row align-items-center g-3">
-                {/* QR Code */}
-                <div className="col-auto">
-                  <img
-                    src="/qr_sar.jpeg"
-                    alt="QR Code"
-                    className="rounded-3 shadow cursor-pointer"
-                    style={{ width: '80px', height: '80px', objectFit: 'cover', cursor: 'pointer' }}
-                    onClick={() => setShowQR(true)}
-                  />
-                </div>
-
                 {/* Bank Info */}
                 <div className="col text-white">
                   <div className="d-flex align-items-center mb-1">
