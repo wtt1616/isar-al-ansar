@@ -473,13 +473,20 @@ export default function LoginPage() {
 
     const dateObj = new Date(todaySchedule.schedule_date);
     const dayOfWeek = dateObj.getDay();
-    const formattedDate = dateObj.toLocaleDateString('ms-MY', { weekday: 'long', day: 'numeric', month: 'long' });
 
-    // Skip Monday (1) and Thursday (4) - No preaching
-    if (dayOfWeek === 1 || dayOfWeek === 4) return banners;
-
-    if (dayOfWeek === 5) {
-      // Friday
+    if (dayOfWeek === 1) {
+      // Monday - Maghrib only
+      if (todaySchedule.maghrib_banner) {
+        banners.push({
+          date: today,
+          slot: 'maghrib',
+          label: `Kuliah Maghrib`,
+          preacherName: todaySchedule.maghrib_preacher_name,
+          bannerUrl: todaySchedule.maghrib_banner
+        });
+      }
+    } else if (dayOfWeek === 5) {
+      // Friday - Dhuha, Tazkirah, Maghrib
       if (todaySchedule.friday_dhuha_banner) {
         banners.push({
           date: today,
@@ -498,8 +505,17 @@ export default function LoginPage() {
           bannerUrl: todaySchedule.friday_banner
         });
       }
+      if (todaySchedule.maghrib_banner) {
+        banners.push({
+          date: today,
+          slot: 'maghrib',
+          label: `Kuliah Maghrib`,
+          preacherName: todaySchedule.maghrib_preacher_name,
+          bannerUrl: todaySchedule.maghrib_banner
+        });
+      }
     } else {
-      // Other days
+      // Other days - Subuh, Dhuha (weekend), Maghrib
       if (todaySchedule.subuh_banner) {
         banners.push({
           date: today,
@@ -1172,15 +1188,8 @@ export default function LoginPage() {
                           const dayOfWeek = dateObj.getDay();
                           const preacherSchedule = getPreacherScheduleForDate(date);
 
-                          if (dayOfWeek === 1 || dayOfWeek === 4) {
-                            return (
-                              <td key={`${date}-subuh`} className="text-center text-muted" style={{ padding: '0.3rem' }}>
-                                No Preaching
-                              </td>
-                            );
-                          }
-
-                          if (dayOfWeek === 5) {
+                          // Monday (1) and Friday (5) - no Kuliah Subuh
+                          if (dayOfWeek === 1 || dayOfWeek === 5) {
                             return (
                               <td key={`${date}-subuh`} className="text-center text-muted" style={{ padding: '0.3rem' }}>
                                 -
@@ -1202,14 +1211,7 @@ export default function LoginPage() {
                           const dayOfWeek = dateObj.getDay();
                           const preacherSchedule = getPreacherScheduleForDate(date);
 
-                          if (dayOfWeek === 1 || dayOfWeek === 4) {
-                            return (
-                              <td key={`${date}-dhuha`} className="text-center text-muted" style={{ padding: '0.3rem' }}>
-                                No Preaching
-                              </td>
-                            );
-                          }
-
+                          // Dhuha only on weekends (Saturday = 6, Sunday = 0)
                           if (dayOfWeek !== 0 && dayOfWeek !== 6) {
                             return (
                               <td key={`${date}-dhuha`} className="text-center text-muted" style={{ padding: '0.3rem' }}>
@@ -1232,14 +1234,7 @@ export default function LoginPage() {
                           const dayOfWeek = dateObj.getDay();
                           const preacherSchedule = getPreacherScheduleForDate(date);
 
-                          if (dayOfWeek === 1 || dayOfWeek === 4) {
-                            return (
-                              <td key={`${date}-friday-dhuha`} className="text-center text-muted" style={{ padding: '0.3rem' }}>
-                                No Preaching
-                              </td>
-                            );
-                          }
-
+                          // Kuliah Dhuha Jumaat only on Friday (5)
                           if (dayOfWeek !== 5) {
                             return (
                               <td key={`${date}-friday-dhuha`} className="text-center text-muted" style={{ padding: '0.3rem' }}>
@@ -1262,14 +1257,7 @@ export default function LoginPage() {
                           const dayOfWeek = dateObj.getDay();
                           const preacherSchedule = getPreacherScheduleForDate(date);
 
-                          if (dayOfWeek === 1 || dayOfWeek === 4) {
-                            return (
-                              <td key={`${date}-friday`} className="text-center text-muted" style={{ padding: '0.3rem' }}>
-                                No Preaching
-                              </td>
-                            );
-                          }
-
+                          // Tazkirah Jumaat only on Friday (5)
                           if (dayOfWeek !== 5) {
                             return (
                               <td key={`${date}-friday`} className="text-center text-muted" style={{ padding: '0.3rem' }}>
@@ -1288,26 +1276,9 @@ export default function LoginPage() {
                       <tr>
                         <td className="fw-bold" style={{ padding: '0.4rem' }}>Kuliah Maghrib</td>
                         {days.map((date) => {
-                          const dateObj = new Date(date);
-                          const dayOfWeek = dateObj.getDay();
                           const preacherSchedule = getPreacherScheduleForDate(date);
 
-                          if (dayOfWeek === 1 || dayOfWeek === 4) {
-                            return (
-                              <td key={`${date}-maghrib`} className="text-center text-muted" style={{ padding: '0.3rem' }}>
-                                No Preaching
-                              </td>
-                            );
-                          }
-
-                          if (dayOfWeek === 5) {
-                            return (
-                              <td key={`${date}-maghrib`} className="text-center text-muted" style={{ padding: '0.3rem' }}>
-                                -
-                              </td>
-                            );
-                          }
-
+                          // Kuliah Maghrib available every day
                           return (
                             <td key={`${date}-maghrib`} style={{ padding: '0.3rem' }}>
                               {renderPreacherInfo(preacherSchedule?.maghrib_preacher_name, preacherSchedule?.maghrib_preacher_photo)}
