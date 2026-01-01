@@ -478,17 +478,17 @@ export default function PermohonanMajlisPage() {
                     </button>
                   </div>
 
-                  {/* Contact Info */}
-                  <div className="mt-4 pt-3 border-top">
+                  {/* Contact Info - Temporarily hidden */}
+                  {/* <div className="mt-4 pt-3 border-top">
                     <p className="text-muted small mb-2">
                       <strong>Sebarang pertanyaan boleh merujuk kepada:</strong>
                     </p>
                     <ul className="list-unstyled text-muted small">
-                      <li><strong>Pengerusi:</strong> Hj Mohd Shafik Hj Mohd Taha di talian 013-645 3396</li>
-                      <li><strong>Setiausaha:</strong> En. Nurul Hisyam Ismail di talian 012-670 9502</li>
-                      <li><strong>Siak:</strong> En. Kamal Dzulfaqar Ramlee di talian 012-974 3858</li>
+                      <li><strong>Pengerusi:</strong> ...</li>
+                      <li><strong>Setiausaha:</strong> ...</li>
+                      <li><strong>Siak:</strong> ...</li>
                     </ul>
-                  </div>
+                  </div> */}
                 </form>
               </div>
             </div>
