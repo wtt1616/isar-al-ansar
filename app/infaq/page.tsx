@@ -6,9 +6,9 @@ export default function InfaqPage() {
   const [copied, setCopied] = useState(false);
 
   const bankInfo = {
-    bank: 'Bank Islam',
+    bank: 'Maybank',
     accountName: 'Surau Al-Ansar',
-    accountNumber: '00000000000000', // TODO: Update with actual Al-Ansar bank account
+    accountNumber: '5648-5610-7697',
   };
 
   const copyAccountNumber = () => {
@@ -75,14 +75,14 @@ export default function InfaqPage() {
                 >
                   <div className="d-flex align-items-center justify-content-center mb-3">
                     <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Bank_Islam_logo.svg/320px-Bank_Islam_logo.svg.png"
-                      alt="Bank Islam"
-                      style={{ height: '30px' }}
+                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Maybank_logo.svg/320px-Maybank_logo.svg.png"
+                      alt="Maybank"
+                      style={{ height: '35px' }}
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                       }}
                     />
-                    <span className="ms-2 fw-bold text-danger" style={{ fontSize: '1.25rem' }}>Bank Islam</span>
+                    <span className="ms-2 fw-bold" style={{ fontSize: '1.25rem', color: '#ffc107' }}>Maybank</span>
                   </div>
 
                   <div className="mb-3">
