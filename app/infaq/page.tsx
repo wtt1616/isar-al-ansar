@@ -46,27 +46,11 @@ export default function InfaqPage() {
                 <p className="mb-0 opacity-75">Surau Al-Ansar</p>
               </div>
 
-              {/* QR Code Section */}
+              {/* Bank Transfer Section */}
               <div className="card-body text-center p-4">
                 <p className="text-muted mb-3">
-                  Scan QR Code menggunakan aplikasi <strong>Internet Banking</strong> atau <strong>E-wallet</strong>
+                  Sila transfer ke akaun bank berikut:
                 </p>
-
-                <div className="mb-4">
-                  <img
-                    src="/qr_sar.jpeg"
-                    alt="QR Code Infaq Surau Al-Ansar"
-                    className="img-fluid rounded-3 shadow"
-                    style={{ maxWidth: '280px' }}
-                  />
-                </div>
-
-                {/* Divider */}
-                <div className="d-flex align-items-center my-4">
-                  <hr className="flex-grow-1" />
-                  <span className="px-3 text-muted small">atau transfer ke</span>
-                  <hr className="flex-grow-1" />
-                </div>
 
                 {/* Bank Info */}
                 <div
