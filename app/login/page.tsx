@@ -972,13 +972,14 @@ export default function LoginPage() {
             </div>
             <p className="mt-3">Loading schedules...</p>
           </div>
-        ) : monthlySchedules.length === 0 && schedules.length === 0 ? (
+        ) : monthlySchedules.length === 0 && schedules.length === 0 && preacherSchedules.length === 0 ? (
           <div className="alert alert-warning">
             No schedule available for this week.
           </div>
         ) : (
           <>
             {/* Prayer Schedule - From Monthly Schedules */}
+            {(monthlySchedules.length > 0 || schedules.length > 0) && (
             <div className="card mb-4">
               <div className="card-header text-white">
                 <h6 className="mb-0" style={{ fontSize: '0.9rem' }}>
@@ -1160,6 +1161,7 @@ export default function LoginPage() {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Jadual Kuliah */}
             <div className="card mb-4">
