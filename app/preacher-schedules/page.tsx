@@ -132,11 +132,15 @@ export default function PreacherSchedulesPage() {
             maghrib_preacher_id: schedule.maghrib_preacher_id,
             friday_preacher_id: schedule.friday_preacher_id,
             friday_dhuha_preacher_id: schedule.friday_dhuha_preacher_id,
+            yasin_kahfi_preacher_id: schedule.yasin_kahfi_preacher_id,
+            kahfi_muslimat_preacher_id: schedule.kahfi_muslimat_preacher_id,
             subuh_banner: schedule.subuh_banner || null,
             dhuha_banner: schedule.dhuha_banner || null,
             maghrib_banner: schedule.maghrib_banner || null,
             friday_banner: schedule.friday_banner || null,
             friday_dhuha_banner: schedule.friday_dhuha_banner || null,
+            yasin_kahfi_banner: schedule.yasin_kahfi_banner || null,
+            kahfi_muslimat_banner: schedule.kahfi_muslimat_banner || null,
             notes: schedule.notes || ''
           });
         });
@@ -192,7 +196,7 @@ export default function PreacherSchedulesPage() {
 
   const handlePreacherChange = (
     dateString: string,
-    type: 'subuh' | 'dhuha' | 'maghrib' | 'friday' | 'friday_dhuha',
+    type: 'subuh' | 'dhuha' | 'maghrib' | 'friday' | 'friday_dhuha' | 'yasin_kahfi' | 'kahfi_muslimat',
     preacherId: number | null
   ) => {
     // Ensure date is always in YYYY-MM-DD format
@@ -206,11 +210,15 @@ export default function PreacherSchedulesPage() {
       maghrib_preacher_id: null,
       friday_preacher_id: null,
       friday_dhuha_preacher_id: null,
+      yasin_kahfi_preacher_id: null,
+      kahfi_muslimat_preacher_id: null,
       subuh_banner: null,
       dhuha_banner: null,
       maghrib_banner: null,
       friday_banner: null,
       friday_dhuha_banner: null,
+      yasin_kahfi_banner: null,
+      kahfi_muslimat_banner: null,
       notes: ''
     };
 
@@ -224,6 +232,10 @@ export default function PreacherSchedulesPage() {
       existing.friday_preacher_id = preacherId;
     } else if (type === 'friday_dhuha') {
       existing.friday_dhuha_preacher_id = preacherId;
+    } else if (type === 'yasin_kahfi') {
+      existing.yasin_kahfi_preacher_id = preacherId;
+    } else if (type === 'kahfi_muslimat') {
+      existing.kahfi_muslimat_preacher_id = preacherId;
     }
 
     newSchedules.set(normalizedDate, existing);
@@ -246,7 +258,9 @@ export default function PreacherSchedulesPage() {
       const schedulesArray = Array.from(schedules.values())
         .filter(
           (schedule) => schedule.subuh_preacher_id || schedule.dhuha_preacher_id || schedule.maghrib_preacher_id || schedule.friday_preacher_id || schedule.friday_dhuha_preacher_id ||
-            schedule.subuh_banner || schedule.dhuha_banner || schedule.maghrib_banner || schedule.friday_banner || schedule.friday_dhuha_banner
+            schedule.yasin_kahfi_preacher_id || schedule.kahfi_muslimat_preacher_id ||
+            schedule.subuh_banner || schedule.dhuha_banner || schedule.maghrib_banner || schedule.friday_banner || schedule.friday_dhuha_banner ||
+            schedule.yasin_kahfi_banner || schedule.kahfi_muslimat_banner
         )
         .map((schedule) => ({
           ...schedule,
@@ -322,7 +336,7 @@ export default function PreacherSchedulesPage() {
 
   const handleBannerChange = (
     dateString: string,
-    slot: 'subuh' | 'dhuha' | 'maghrib' | 'friday' | 'friday_dhuha',
+    slot: 'subuh' | 'dhuha' | 'maghrib' | 'friday' | 'friday_dhuha' | 'yasin_kahfi' | 'kahfi_muslimat',
     bannerUrl: string | null
   ) => {
     const normalizedDate = dateString.split('T')[0];
@@ -334,11 +348,15 @@ export default function PreacherSchedulesPage() {
       maghrib_preacher_id: null,
       friday_preacher_id: null,
       friday_dhuha_preacher_id: null,
+      yasin_kahfi_preacher_id: null,
+      kahfi_muslimat_preacher_id: null,
       subuh_banner: null,
       dhuha_banner: null,
       maghrib_banner: null,
       friday_banner: null,
       friday_dhuha_banner: null,
+      yasin_kahfi_banner: null,
+      kahfi_muslimat_banner: null,
       notes: ''
     };
 
