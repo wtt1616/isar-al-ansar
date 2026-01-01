@@ -268,7 +268,7 @@ export default function LoginPage() {
     return () => clearInterval(interval);
   }, [prayerTimesData]);
 
-  // Fetch aktiviti with images
+  // Fetch all aktiviti for current month (including those without images)
   useEffect(() => {
     const fetchAktiviti = async () => {
       try {
@@ -278,9 +278,8 @@ export default function LoginPage() {
         const res = await fetch(`/api/aktiviti?bulan=${bulan}`);
         if (res.ok) {
           const data = await res.json();
-          // Filter only aktiviti with images
-          const aktivitiWithImages = (data.data || []).filter((a: Aktiviti) => a.image_file);
-          setAktivitiList(aktivitiWithImages);
+          // Include all aktiviti, not just ones with images
+          setAktivitiList(data.data || []);
         }
       } catch (error) {
         console.error('Error fetching aktiviti:', error);
@@ -1294,41 +1293,137 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Aktiviti Section - Display activities with images */}
+            {/* Jadual Aktiviti Bulan Ini - Display all activities with generated posters */}
             {aktivitiList.length > 0 && (
               <div className="card mb-4">
-                <div className="card-header text-white">
+                <div className="card-header text-white" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)' }}>
                   <h6 className="mb-0" style={{ fontSize: '0.9rem' }}>
                     <i className="bi bi-calendar-event-fill me-2"></i>
-                    Poster Aktiviti Bulan Ini
+                    Jadual Aktiviti Bulan Ini
                   </h6>
                 </div>
                 <div className="card-body p-2">
                   <div className="row g-2 justify-content-center">
-                    {aktivitiList.map((aktiviti) => (
-                      <div key={aktiviti.id} className="col-4 col-md-3 col-lg-2">
-                        <div
-                          className="shadow-sm"
-                          style={{ cursor: 'pointer', transition: 'transform 0.2s', borderRadius: '0.375rem', overflow: 'hidden' }}
-                          onClick={() => setSelectedAktiviti(aktiviti)}
-                          onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
-                          onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-                        >
-                          <img
-                            src={aktiviti.image_file!}
-                            alt={aktiviti.tajuk}
-                            style={{
-                              width: '100%',
-                              height: 'auto',
-                              display: 'block'
-                            }}
-                          />
+                    {aktivitiList.map((aktiviti) => {
+                      // Get category color and icon
+                      const getCategoryStyle = (kategori: string) => {
+                        const styles: Record<string, { bg: string; icon: string; label: string }> = {
+                          'kuliah': { bg: 'linear-gradient(135deg, #059669 0%, #047857 100%)', icon: 'bi-book', label: 'Kuliah' },
+                          'majlis': { bg: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', icon: 'bi-people', label: 'Majlis' },
+                          'gotong_royong': { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', icon: 'bi-tools', label: 'Gotong Royong' },
+                          'mesyuarat': { bg: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)', icon: 'bi-clipboard', label: 'Mesyuarat' },
+                          'korban': { bg: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)', icon: 'bi-heart', label: 'Korban' },
+                          'ramadhan': { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', icon: 'bi-moon-stars', label: 'Ramadhan' },
+                          'lain_lain': { bg: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)', icon: 'bi-calendar-event', label: 'Lain-lain' },
+                        };
+                        return styles[kategori] || styles['lain_lain'];
+                      };
+
+                      const categoryStyle = getCategoryStyle(aktiviti.kategori);
+
+                      return (
+                        <div key={aktiviti.id} className="col-6 col-md-4 col-lg-3">
+                          <div
+                            className="shadow-sm h-100"
+                            style={{ cursor: 'pointer', transition: 'transform 0.2s', borderRadius: '0.5rem', overflow: 'hidden' }}
+                            onClick={() => setSelectedAktiviti(aktiviti)}
+                            onMouseOver={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
+                            onMouseOut={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                          >
+                            {aktiviti.image_file ? (
+                              /* Show uploaded image */
+                              <img
+                                src={aktiviti.image_file}
+                                alt={aktiviti.tajuk}
+                                style={{
+                                  width: '100%',
+                                  height: 'auto',
+                                  display: 'block'
+                                }}
+                              />
+                            ) : (
+                              /* Generate poster for activities without image */
+                              <div
+                                style={{
+                                  background: categoryStyle.bg,
+                                  padding: '1rem',
+                                  minHeight: '180px',
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  justifyContent: 'space-between',
+                                  color: 'white'
+                                }}
+                              >
+                                {/* Category Badge */}
+                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                  <span className="badge" style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '0.65rem' }}>
+                                    <i className={`bi ${categoryStyle.icon} me-1`}></i>
+                                    {categoryStyle.label}
+                                  </span>
+                                </div>
+
+                                {/* Title */}
+                                <div className="flex-grow-1 d-flex align-items-center justify-content-center text-center">
+                                  <h6 className="mb-0 fw-bold" style={{
+                                    fontSize: aktiviti.tajuk.length > 30 ? '0.8rem' : '0.95rem',
+                                    lineHeight: '1.3',
+                                    textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                                  }}>
+                                    {aktiviti.tajuk}
+                                  </h6>
+                                </div>
+
+                                {/* Date & Time Info */}
+                                <div style={{ fontSize: '0.7rem', opacity: 0.95 }}>
+                                  <div className="d-flex align-items-center mb-1">
+                                    <i className="bi bi-calendar3 me-1"></i>
+                                    <span>
+                                      {new Date(aktiviti.tarikh_mula).toLocaleDateString('ms-MY', {
+                                        day: 'numeric',
+                                        month: 'short',
+                                        year: 'numeric'
+                                      })}
+                                      {aktiviti.tarikh_tamat && aktiviti.tarikh_tamat !== aktiviti.tarikh_mula && (
+                                        <> - {new Date(aktiviti.tarikh_tamat).toLocaleDateString('ms-MY', {
+                                          day: 'numeric',
+                                          month: 'short'
+                                        })}</>
+                                      )}
+                                    </span>
+                                  </div>
+                                  {aktiviti.masa_mula && (
+                                    <div className="d-flex align-items-center mb-1">
+                                      <i className="bi bi-clock me-1"></i>
+                                      <span>{aktiviti.masa_mula}{aktiviti.masa_tamat && ` - ${aktiviti.masa_tamat}`}</span>
+                                    </div>
+                                  )}
+                                  <div className="d-flex align-items-center">
+                                    <i className="bi bi-geo-alt me-1"></i>
+                                    <span style={{
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                      maxWidth: '150px'
+                                    }}>
+                                      {aktiviti.lokasi}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Surau Branding */}
+                                <div className="text-center mt-2" style={{ fontSize: '0.6rem', opacity: 0.8 }}>
+                                  <i className="bi bi-mosque me-1"></i>
+                                  Surau Al-Ansar
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   <p className="text-center text-muted mb-0 mt-2" style={{ fontSize: '0.7rem' }}>
-                    <i className="bi bi-hand-index me-1"></i>Tekan poster untuk lihat saiz penuh
+                    <i className="bi bi-hand-index me-1"></i>Tekan untuk lihat butiran aktiviti
                   </p>
                 </div>
               </div>
@@ -1366,67 +1461,146 @@ export default function LoginPage() {
         </div>
       )}
 
-      {/* Aktiviti Image View Modal */}
-      {selectedAktiviti && (
-        <div
-          className="modal show d-block"
-          tabIndex={-1}
-          style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
-          onClick={() => setSelectedAktiviti(null)}
-        >
-          <div className="modal-dialog modal-dialog-centered modal-lg">
-            <div className="modal-content" style={{ backgroundColor: 'transparent', border: 'none' }} onClick={(e) => e.stopPropagation()}>
-              <button
-                type="button"
-                className="btn btn-light position-absolute"
-                style={{ top: '-45px', right: '0', zIndex: 1060 }}
-                onClick={() => setSelectedAktiviti(null)}
-              >
-                <i className="bi bi-x-lg"></i>
-              </button>
-              <div style={{ maxHeight: '70vh', overflow: 'auto' }}>
-                <img
-                  src={selectedAktiviti.image_file!}
-                  alt={selectedAktiviti.tajuk}
-                  style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}
-                />
-              </div>
-              {/* Keterangan Section */}
-              <div className="mt-3 p-3" style={{ backgroundColor: 'white', borderRadius: '0.5rem' }}>
-                <h5 className="mb-2" style={{ color: '#059669' }}>
-                  <i className="bi bi-calendar-event me-2"></i>
-                  {selectedAktiviti.tajuk}
-                </h5>
-                {selectedAktiviti.keterangan && (
-                  <p className="mb-2 text-dark" style={{ whiteSpace: 'pre-wrap' }}>
-                    {selectedAktiviti.keterangan}
-                  </p>
-                )}
-                <div className="text-muted small">
-                  <i className="bi bi-geo-alt me-1"></i>
-                  {selectedAktiviti.lokasi}
-                  <span className="mx-2">|</span>
-                  <i className="bi bi-calendar3 me-1"></i>
-                  {new Date(selectedAktiviti.tarikh_mula).toLocaleDateString('ms-MY', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                  {selectedAktiviti.masa_mula && (
-                    <>
-                      <span className="mx-2">|</span>
-                      <i className="bi bi-clock me-1"></i>
-                      {selectedAktiviti.masa_mula}
-                      {selectedAktiviti.masa_tamat && ` - ${selectedAktiviti.masa_tamat}`}
-                    </>
+      {/* Aktiviti View Modal */}
+      {selectedAktiviti && (() => {
+        // Get category style for generated poster
+        const getCategoryStyleModal = (kategori: string) => {
+          const styles: Record<string, { bg: string; icon: string; label: string }> = {
+            'kuliah': { bg: 'linear-gradient(135deg, #059669 0%, #047857 100%)', icon: 'bi-book', label: 'Kuliah' },
+            'majlis': { bg: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)', icon: 'bi-people', label: 'Majlis' },
+            'gotong_royong': { bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', icon: 'bi-tools', label: 'Gotong Royong' },
+            'mesyuarat': { bg: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)', icon: 'bi-clipboard', label: 'Mesyuarat' },
+            'korban': { bg: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)', icon: 'bi-heart', label: 'Korban' },
+            'ramadhan': { bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', icon: 'bi-moon-stars', label: 'Ramadhan' },
+            'lain_lain': { bg: 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)', icon: 'bi-calendar-event', label: 'Lain-lain' },
+          };
+          return styles[kategori] || styles['lain_lain'];
+        };
+        const modalCategoryStyle = getCategoryStyleModal(selectedAktiviti.kategori);
+
+        return (
+          <div
+            className="modal show d-block"
+            tabIndex={-1}
+            style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
+            onClick={() => setSelectedAktiviti(null)}
+          >
+            <div className="modal-dialog modal-dialog-centered modal-lg">
+              <div className="modal-content" style={{ backgroundColor: 'transparent', border: 'none' }} onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  className="btn btn-light position-absolute"
+                  style={{ top: '-45px', right: '0', zIndex: 1060 }}
+                  onClick={() => setSelectedAktiviti(null)}
+                >
+                  <i className="bi bi-x-lg"></i>
+                </button>
+                <div style={{ maxHeight: '70vh', overflow: 'auto' }}>
+                  {selectedAktiviti.image_file ? (
+                    <img
+                      src={selectedAktiviti.image_file}
+                      alt={selectedAktiviti.tajuk}
+                      style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '0 auto', borderRadius: '0.5rem' }}
+                    />
+                  ) : (
+                    /* Generated poster for modal */
+                    <div
+                      style={{
+                        background: modalCategoryStyle.bg,
+                        padding: '2rem',
+                        borderRadius: '0.5rem',
+                        color: 'white',
+                        textAlign: 'center',
+                        maxWidth: '400px',
+                        margin: '0 auto'
+                      }}
+                    >
+                      <div className="mb-3">
+                        <span className="badge" style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '0.8rem', padding: '0.5rem 1rem' }}>
+                          <i className={`bi ${modalCategoryStyle.icon} me-2`}></i>
+                          {modalCategoryStyle.label}
+                        </span>
+                      </div>
+                      <div className="mb-4">
+                        <i className="bi bi-calendar-event" style={{ fontSize: '3rem', opacity: 0.3 }}></i>
+                      </div>
+                      <h3 className="fw-bold mb-4" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                        {selectedAktiviti.tajuk}
+                      </h3>
+                      <div style={{ fontSize: '1rem', opacity: 0.95 }}>
+                        <div className="mb-2">
+                          <i className="bi bi-calendar3 me-2"></i>
+                          {new Date(selectedAktiviti.tarikh_mula).toLocaleDateString('ms-MY', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                          })}
+                          {selectedAktiviti.tarikh_tamat && selectedAktiviti.tarikh_tamat !== selectedAktiviti.tarikh_mula && (
+                            <><br />hingga {new Date(selectedAktiviti.tarikh_tamat).toLocaleDateString('ms-MY', {
+                              weekday: 'long',
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric'
+                            })}</>
+                          )}
+                        </div>
+                        {selectedAktiviti.masa_mula && (
+                          <div className="mb-2">
+                            <i className="bi bi-clock me-2"></i>
+                            {selectedAktiviti.masa_mula}
+                            {selectedAktiviti.masa_tamat && ` - ${selectedAktiviti.masa_tamat}`}
+                          </div>
+                        )}
+                        <div>
+                          <i className="bi bi-geo-alt me-2"></i>
+                          {selectedAktiviti.lokasi}
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.2)', fontSize: '0.9rem', opacity: 0.8 }}>
+                        <i className="bi bi-mosque me-2"></i>
+                        Surau Al-Ansar
+                      </div>
+                    </div>
                   )}
+                </div>
+                {/* Keterangan Section */}
+                <div className="mt-3 p-3" style={{ backgroundColor: 'white', borderRadius: '0.5rem' }}>
+                  <h5 className="mb-2" style={{ color: '#059669' }}>
+                    <i className="bi bi-calendar-event me-2"></i>
+                    {selectedAktiviti.tajuk}
+                  </h5>
+                  {selectedAktiviti.keterangan && (
+                    <p className="mb-2 text-dark" style={{ whiteSpace: 'pre-wrap' }}>
+                      {selectedAktiviti.keterangan}
+                    </p>
+                  )}
+                  <div className="text-muted small">
+                    <i className="bi bi-geo-alt me-1"></i>
+                    {selectedAktiviti.lokasi}
+                    <span className="mx-2">|</span>
+                    <i className="bi bi-calendar3 me-1"></i>
+                    {new Date(selectedAktiviti.tarikh_mula).toLocaleDateString('ms-MY', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                    {selectedAktiviti.masa_mula && (
+                      <>
+                        <span className="mx-2">|</span>
+                        <i className="bi bi-clock me-1"></i>
+                        {selectedAktiviti.masa_mula}
+                        {selectedAktiviti.masa_tamat && ` - ${selectedAktiviti.masa_tamat}`}
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Pengumuman Image View Modal */}
       {selectedPengumuman && selectedPengumuman.imej && (
