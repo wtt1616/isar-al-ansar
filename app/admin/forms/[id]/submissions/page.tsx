@@ -188,24 +188,27 @@ export default function SubmissionsPage() {
                 <table className="table table-hover mb-0">
                   <thead className="table-light">
                     <tr>
-                      <th style={{ width: '60px' }}>No</th>
-                      <th>Data Utama</th>
-                      <th style={{ width: '180px' }}>Tarikh</th>
-                      <th style={{ width: '100px' }} className="text-center">Tindakan</th>
+                      <th style={{ width: '50px' }}>No</th>
+                      {/* Show first 5 fields as columns */}
+                      {form?.fields.slice(0, 5).map((field) => (
+                        <th key={field.id} style={{ minWidth: '120px' }}>
+                          {field.label}
+                        </th>
+                      ))}
+                      <th style={{ width: '150px' }}>Tarikh</th>
+                      <th style={{ width: '90px' }} className="text-center">Tindakan</th>
                     </tr>
                   </thead>
                   <tbody>
                     {submissions.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="text-center py-4 text-muted">
+                        <td colSpan={(form?.fields.slice(0, 5).length || 0) + 3} className="text-center py-4 text-muted">
                           <i className="bi bi-inbox fs-1 d-block mb-2"></i>
                           Tiada submissions lagi
                         </td>
                       </tr>
                     ) : (
                       submissions.map((sub, index) => {
-                        const firstField = form?.fields[0];
-                        const secondField = form?.fields[1];
                         return (
                           <tr
                             key={sub.id}
@@ -214,14 +217,41 @@ export default function SubmissionsPage() {
                             onClick={() => setSelectedSubmission(sub)}
                           >
                             <td>{(pagination.page - 1) * pagination.limit + index + 1}</td>
-                            <td>
-                              <div className="fw-medium">
-                                {firstField && sub.data[firstField.id]}
-                              </div>
-                              {secondField && (
-                                <small className="text-muted">{sub.data[secondField.id]}</small>
-                              )}
-                            </td>
+                            {/* Show first 5 field values */}
+                            {form?.fields.slice(0, 5).map((field) => {
+                              const value = sub.data[field.id];
+                              let displayValue = '-';
+
+                              if (value !== null && value !== undefined && value !== '') {
+                                if (Array.isArray(value)) {
+                                  displayValue = value.join(', ');
+                                } else if (field.type === 'file' && typeof value === 'string') {
+                                  return (
+                                    <td key={field.id}>
+                                      <a href={value} target="_blank" className="btn btn-sm btn-outline-primary py-0 px-1">
+                                        <i className="bi bi-file-earmark"></i>
+                                      </a>
+                                    </td>
+                                  );
+                                } else {
+                                  displayValue = String(value);
+                                }
+                              }
+
+                              return (
+                                <td key={field.id}>
+                                  <span style={{
+                                    display: 'block',
+                                    maxWidth: '200px',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap'
+                                  }} title={displayValue}>
+                                    {displayValue}
+                                  </span>
+                                </td>
+                              );
+                            })}
                             <td>
                               <small>
                                 {new Date(sub.created_at).toLocaleString('ms-MY', {
