@@ -106,7 +106,7 @@ export async function generateMonthlySchedule(
     throw new Error('Tiada Bilal aktif ditemui. Sila daftarkan Bilal terlebih dahulu.');
   }
 
-  // Initialize assignment counters for fair distribution
+  // Initialize assignment counters for fair distribution (for first week only)
   const imamAssignments = initializeAssignments(imams);
   const bilalAssignments = initializeAssignments(bilals);
   const siakAssignments = initializeAssignments(siaks);
@@ -114,10 +114,20 @@ export async function generateMonthlySchedule(
   const tahsinAssignments = initializeAssignments(petugasTahsin);
   const imamJumaatAssignments = initializeAssignments(imamJumaat);
 
-  // Generate schedules for each day
-  for (const date of daysInMonth) {
+  // Store first week's schedules by day of week for copying
+  // Key: dayOfWeek (0-6), Value: array of schedule entries for that day
+  const firstWeekSchedules = new Map<number, ScheduleEntry[]>();
+
+  // Determine first week days (from 1st until we complete all 7 days of week)
+  // First week = days 1-7 of the month (or less if month has fewer days)
+  const firstWeekDays = daysInMonth.slice(0, 7);
+  const firstWeekDayOfWeeks = new Set(firstWeekDays.map(d => d.getDay()));
+
+  // Generate schedules for first week only
+  for (const date of firstWeekDays) {
     const dateStr = formatDateOnly(date);
     const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday, ..., 5=Friday, 6=Saturday
+    const daySchedules: ScheduleEntry[] = [];
 
     // 1. Generate 5 Prayer Schedules (Daily)
     for (const prayerTime of PRAYER_TIMES) {
@@ -125,7 +135,7 @@ export async function generateMonthlySchedule(
       const selectedImam = selectLeastAssigned(imams, imamAssignments);
       if (selectedImam) {
         updateAssignment(imamAssignments, selectedImam.id);
-        schedules.push({
+        const entry: ScheduleEntry = {
           schedule_date: dateStr,
           schedule_type: 'prayer',
           prayer_time: prayerTime,
@@ -135,14 +145,16 @@ export async function generateMonthlySchedule(
           year: year,
           is_auto_generated: true,
           created_by: createdBy
-        });
+        };
+        schedules.push(entry);
+        daySchedules.push(entry);
       }
 
       // Assign Bilal
       const selectedBilal = selectLeastAssigned(bilals, bilalAssignments);
       if (selectedBilal) {
         updateAssignment(bilalAssignments, selectedBilal.id);
-        schedules.push({
+        const entry: ScheduleEntry = {
           schedule_date: dateStr,
           schedule_type: 'prayer',
           prayer_time: prayerTime,
@@ -152,7 +164,9 @@ export async function generateMonthlySchedule(
           year: year,
           is_auto_generated: true,
           created_by: createdBy
-        });
+        };
+        schedules.push(entry);
+        daySchedules.push(entry);
       }
 
       // Assign Siak
@@ -160,7 +174,7 @@ export async function generateMonthlySchedule(
         const selectedSiak = selectLeastAssigned(siaks, siakAssignments);
         if (selectedSiak) {
           updateAssignment(siakAssignments, selectedSiak.id);
-          schedules.push({
+          const entry: ScheduleEntry = {
             schedule_date: dateStr,
             schedule_type: 'prayer',
             prayer_time: prayerTime,
@@ -170,7 +184,9 @@ export async function generateMonthlySchedule(
             year: year,
             is_auto_generated: true,
             created_by: createdBy
-          });
+          };
+          schedules.push(entry);
+          daySchedules.push(entry);
         }
       }
     }
@@ -180,7 +196,7 @@ export async function generateMonthlySchedule(
       const selectedTadabbur = selectLeastAssigned(petugasTadabbur, tadabburAssignments);
       if (selectedTadabbur) {
         updateAssignment(tadabburAssignments, selectedTadabbur.id);
-        schedules.push({
+        const entry: ScheduleEntry = {
           schedule_date: dateStr,
           schedule_type: 'tadabbur',
           prayer_time: null,
@@ -190,7 +206,9 @@ export async function generateMonthlySchedule(
           year: year,
           is_auto_generated: true,
           created_by: createdBy
-        });
+        };
+        schedules.push(entry);
+        daySchedules.push(entry);
       }
     }
 
@@ -199,7 +217,7 @@ export async function generateMonthlySchedule(
       const selectedTahsin = selectLeastAssigned(petugasTahsin, tahsinAssignments);
       if (selectedTahsin) {
         updateAssignment(tahsinAssignments, selectedTahsin.id);
-        schedules.push({
+        const entry: ScheduleEntry = {
           schedule_date: dateStr,
           schedule_type: 'tahsin',
           prayer_time: null,
@@ -209,7 +227,9 @@ export async function generateMonthlySchedule(
           year: year,
           is_auto_generated: true,
           created_by: createdBy
-        });
+        };
+        schedules.push(entry);
+        daySchedules.push(entry);
       }
     }
 
@@ -218,7 +238,7 @@ export async function generateMonthlySchedule(
       const selectedImamJumaat = selectLeastAssigned(imamJumaat, imamJumaatAssignments);
       if (selectedImamJumaat) {
         updateAssignment(imamJumaatAssignments, selectedImamJumaat.id);
-        schedules.push({
+        const entry: ScheduleEntry = {
           schedule_date: dateStr,
           schedule_type: 'imam_jumaat',
           prayer_time: null,
@@ -228,6 +248,29 @@ export async function generateMonthlySchedule(
           year: year,
           is_auto_generated: true,
           created_by: createdBy
+        };
+        schedules.push(entry);
+        daySchedules.push(entry);
+      }
+    }
+
+    // Store schedules for this day of week
+    firstWeekSchedules.set(dayOfWeek, daySchedules);
+  }
+
+  // Copy first week's schedules to remaining weeks
+  for (let i = 7; i < daysInMonth.length; i++) {
+    const date = daysInMonth[i];
+    const dateStr = formatDateOnly(date);
+    const dayOfWeek = date.getDay();
+
+    // Get the schedules from first week for the same day of week
+    const templateSchedules = firstWeekSchedules.get(dayOfWeek);
+    if (templateSchedules) {
+      for (const template of templateSchedules) {
+        schedules.push({
+          ...template,
+          schedule_date: dateStr // Use new date, keep same petugas
         });
       }
     }
