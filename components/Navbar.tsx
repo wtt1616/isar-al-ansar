@@ -556,6 +556,7 @@ export default function Navbar() {
                     pathname === '/admin/roles' ||
                     pathname === '/admin/permissions' ||
                     pathname === '/admin/pengumuman' ||
+                    pathname.startsWith('/admin/forms') ||
                     pathname === '/preachers/manage' ||
                     pathname === '/dashboard/maklumbalas' ||
                     pathname === '/dashboard/tender' ||
@@ -636,6 +637,12 @@ export default function Navbar() {
                     <Link className="dropdown-item" href="/admin/pengumuman">
                       <i className="bi bi-megaphone me-2"></i>
                       Pengumuman
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" href="/admin/forms">
+                      <i className="bi bi-ui-checks-grid me-2"></i>
+                      Pengurusan Borang
                     </Link>
                   </li>
                   <li>
