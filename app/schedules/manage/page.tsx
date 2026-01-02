@@ -45,6 +45,7 @@ export default function ManageSchedulePage() {
   });
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [copying, setCopying] = useState(false);
 
   // Current month/year selection
   const now = new Date();
@@ -103,7 +104,7 @@ export default function ManageSchedulePage() {
   };
 
   const generateSchedule = async () => {
-    if (!confirm(`Jana jadual untuk ${MONTHS_MALAY[selectedMonth - 1]} ${selectedYear}?`)) {
+    if (!confirm(`Jana jadual MINGGU PERTAMA untuk ${MONTHS_MALAY[selectedMonth - 1]} ${selectedYear}?`)) {
       return;
     }
 
@@ -117,7 +118,7 @@ export default function ManageSchedulePage() {
 
       const data = await res.json();
       if (res.ok) {
-        showAlert('success', data.message || 'Jadual berjaya dijana!');
+        showAlert('success', 'Jadual minggu pertama berjaya dijana! Sila edit jika perlu, kemudian copy ke minggu lain.');
         fetchData();
       } else {
         showAlert('danger', data.error || 'Gagal menjana jadual');
@@ -126,6 +127,33 @@ export default function ManageSchedulePage() {
       showAlert('danger', 'Ralat menjana jadual');
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const copyWeekOne = async () => {
+    if (!confirm(`Copy jadual minggu pertama ke minggu 2, 3, 4, 5 untuk ${MONTHS_MALAY[selectedMonth - 1]} ${selectedYear}?`)) {
+      return;
+    }
+
+    setCopying(true);
+    try {
+      const res = await fetch('/api/monthly-schedules/copy-week', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ month: selectedMonth, year: selectedYear })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        showAlert('success', data.message || 'Jadual berjaya disalin!');
+        fetchData();
+      } else {
+        showAlert('danger', data.error || 'Gagal menyalin jadual');
+      }
+    } catch (error) {
+      showAlert('danger', 'Ralat menyalin jadual');
+    } finally {
+      setCopying(false);
     }
   };
 
@@ -331,17 +359,32 @@ export default function ManageSchedulePage() {
               className="btn btn-success me-2"
               onClick={generateSchedule}
               disabled={generating || schedules.length > 0}
+              title="Jana jadual untuk minggu pertama sahaja"
             >
               {generating ? (
                 <><span className="spinner-border spinner-border-sm me-2"></span>Menjana...</>
               ) : (
-                <><i className="bi bi-magic me-2"></i>Jana Jadual</>
+                <><i className="bi bi-magic me-2"></i>Jana Minggu 1</>
               )}
             </button>
             {schedules.length > 0 && (
-              <button className="btn btn-danger" onClick={deleteAllSchedules}>
-                <i className="bi bi-trash me-2"></i>Padam Semua
-              </button>
+              <>
+                <button
+                  className="btn btn-primary me-2"
+                  onClick={copyWeekOne}
+                  disabled={copying}
+                  title="Copy jadual minggu pertama ke minggu 2, 3, 4, 5"
+                >
+                  {copying ? (
+                    <><span className="spinner-border spinner-border-sm me-2"></span>Menyalin...</>
+                  ) : (
+                    <><i className="bi bi-files me-2"></i>Copy Minggu 1</>
+                  )}
+                </button>
+                <button className="btn btn-danger" onClick={deleteAllSchedules}>
+                  <i className="bi bi-trash me-2"></i>Padam Semua
+                </button>
+              </>
             )}
           </div>
         </div>

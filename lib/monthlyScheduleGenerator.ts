@@ -258,24 +258,7 @@ export async function generateMonthlySchedule(
     firstWeekSchedules.set(dayOfWeek, daySchedules);
   }
 
-  // Copy first week's schedules to remaining weeks
-  for (let i = 7; i < daysInMonth.length; i++) {
-    const date = daysInMonth[i];
-    const dateStr = formatDateOnly(date);
-    const dayOfWeek = date.getDay();
-
-    // Get the schedules from first week for the same day of week
-    const templateSchedules = firstWeekSchedules.get(dayOfWeek);
-    if (templateSchedules) {
-      for (const template of templateSchedules) {
-        schedules.push({
-          ...template,
-          schedule_date: dateStr // Use new date, keep same petugas
-        });
-      }
-    }
-  }
-
+  // Only return first week schedules - admin will copy to other weeks manually
   return schedules;
 }
 
