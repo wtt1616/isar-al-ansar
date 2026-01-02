@@ -130,9 +130,9 @@ export default function FormsListPage() {
           <Link href="/admin/forms/new" className="btn btn-primary">
             <i className="bi bi-plus-lg me-1"></i> Buat Borang Baru
           </Link>
-          <button className="btn btn-outline-secondary" onClick={() => router.back()}>
-            <i className="bi bi-arrow-left me-1"></i> Kembali
-          </button>
+          <Link href="/dashboard" className="btn btn-outline-secondary">
+            <i className="bi bi-speedometer2 me-1"></i> Dashboard
+          </Link>
         </div>
       </div>
 
