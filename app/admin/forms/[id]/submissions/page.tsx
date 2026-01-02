@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -34,9 +34,33 @@ export default function SubmissionsPage() {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<FormInfo | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 0 });
+  const [pagination, setPagination] = useState({ page: 1, limit: 100, total: 0, totalPages: 0 });
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter submissions based on search query
+  const filteredSubmissions = useMemo(() => {
+    if (!searchQuery.trim()) return submissions;
+
+    const query = searchQuery.toLowerCase().trim();
+    return submissions.filter(sub => {
+      // Search in all field values
+      const dataValues = Object.values(sub.data || {});
+      for (const value of dataValues) {
+        if (value === null || value === undefined) continue;
+
+        if (Array.isArray(value)) {
+          if (value.some(v => String(v).toLowerCase().includes(query))) {
+            return true;
+          }
+        } else if (String(value).toLowerCase().includes(query)) {
+          return true;
+        }
+      }
+      return false;
+    });
+  }, [submissions, searchQuery]);
 
   useEffect(() => {
     if (session?.user?.role === 'admin' && formId) {
@@ -183,6 +207,45 @@ export default function SubmissionsPage() {
         {/* Submissions Table */}
         <div className={selectedSubmission ? 'col-md-7' : 'col-12'}>
           <div className="card">
+            {/* Search Filter */}
+            <div className="card-header bg-white py-2">
+              <div className="row align-items-center">
+                <div className="col-md-6">
+                  <div className="input-group input-group-sm">
+                    <span className="input-group-text bg-light border-end-0">
+                      <i className="bi bi-search text-muted"></i>
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control border-start-0"
+                      placeholder="Cari dalam semua field..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                      <button
+                        className="btn btn-outline-secondary"
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        title="Clear search"
+                      >
+                        <i className="bi bi-x"></i>
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="col-md-6 text-md-end mt-2 mt-md-0">
+                  <small className="text-muted">
+                    {searchQuery ? (
+                      <>Menunjukkan {filteredSubmissions.length} daripada {submissions.length} rekod</>
+                    ) : (
+                      <>{submissions.length} rekod</>
+                    )}
+                  </small>
+                </div>
+              </div>
+            </div>
+
             <div className="card-body p-0">
               <div className="table-responsive">
                 <table className="table table-hover mb-0">
@@ -200,15 +263,15 @@ export default function SubmissionsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {submissions.length === 0 ? (
+                    {filteredSubmissions.length === 0 ? (
                       <tr>
                         <td colSpan={(form?.fields.slice(0, 5).length || 0) + 3} className="text-center py-4 text-muted">
                           <i className="bi bi-inbox fs-1 d-block mb-2"></i>
-                          Tiada submissions lagi
+                          {searchQuery ? 'Tiada rekod dijumpai' : 'Tiada submissions lagi'}
                         </td>
                       </tr>
                     ) : (
-                      submissions.map((sub, index) => {
+                      filteredSubmissions.map((sub, index) => {
                         return (
                           <tr
                             key={sub.id}
