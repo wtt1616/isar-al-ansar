@@ -46,6 +46,7 @@ export default function ManageSchedulePage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [copying, setCopying] = useState(false);
+  const [copyingFromPrev, setCopyingFromPrev] = useState(false);
 
   // Current month/year selection
   const now = new Date();
@@ -154,6 +155,41 @@ export default function ManageSchedulePage() {
       showAlert('danger', 'Ralat menyalin jadual');
     } finally {
       setCopying(false);
+    }
+  };
+
+  const copyFromPreviousMonth = async () => {
+    // Calculate previous month name
+    let prevMonth = selectedMonth - 1;
+    let prevYear = selectedYear;
+    if (prevMonth < 1) {
+      prevMonth = 12;
+      prevYear = selectedYear - 1;
+    }
+
+    if (!confirm(`Copy jadual dari ${MONTHS_MALAY[prevMonth - 1]} ${prevYear} ke ${MONTHS_MALAY[selectedMonth - 1]} ${selectedYear}?`)) {
+      return;
+    }
+
+    setCopyingFromPrev(true);
+    try {
+      const res = await fetch('/api/monthly-schedules/copy-from-previous', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ month: selectedMonth, year: selectedYear })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        showAlert('success', data.message || 'Jadual berjaya disalin dari bulan sebelumnya!');
+        fetchData();
+      } else {
+        showAlert('danger', data.error || 'Gagal menyalin jadual');
+      }
+    } catch (error) {
+      showAlert('danger', 'Ralat menyalin jadual');
+    } finally {
+      setCopyingFromPrev(false);
     }
   };
 
@@ -365,6 +401,18 @@ export default function ManageSchedulePage() {
                 <><span className="spinner-border spinner-border-sm me-2"></span>Menjana...</>
               ) : (
                 <><i className="bi bi-magic me-2"></i>Jana Minggu 1</>
+              )}
+            </button>
+            <button
+              className="btn btn-info me-2"
+              onClick={copyFromPreviousMonth}
+              disabled={copyingFromPrev || schedules.length > 0}
+              title="Copy jadual dari bulan sebelumnya"
+            >
+              {copyingFromPrev ? (
+                <><span className="spinner-border spinner-border-sm me-2"></span>Menyalin...</>
+              ) : (
+                <><i className="bi bi-arrow-left-circle me-2"></i>Copy Bulan Lalu</>
               )}
             </button>
             {schedules.length > 0 && (
