@@ -54,6 +54,7 @@ export default function PreacherSchedulesPage() {
   const [schedules, setSchedules] = useState<Map<string, Schedule>>(new Map());
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [copyingFromPrev, setCopyingFromPrev] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
@@ -301,6 +302,50 @@ export default function PreacherSchedulesPage() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const copyFromPreviousMonth = async () => {
+    // Calculate previous month name
+    let prevMonth = month - 1;
+    let prevYear = year;
+    if (prevMonth < 1) {
+      prevMonth = 12;
+      prevYear = year - 1;
+    }
+
+    const monthNames = [
+      'Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun',
+      'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'
+    ];
+
+    if (!confirm(`Copy jadual ceramah dari ${monthNames[prevMonth - 1]} ${prevYear} ke ${monthNames[month - 1]} ${year}?`)) {
+      return;
+    }
+
+    setCopyingFromPrev(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch('/api/preacher-schedules/copy-from-previous', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ month, year })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setSuccess(data.message || 'Jadual berjaya disalin dari bulan sebelumnya!');
+        fetchSchedules();
+        setTimeout(() => setSuccess(''), 5000);
+      } else {
+        setError(data.error || 'Gagal menyalin jadual');
+      }
+    } catch (err) {
+      setError('Ralat menyalin jadual');
+    } finally {
+      setCopyingFromPrev(false);
+    }
   };
 
   const handleBannerUpload = async (dateString: string, slot: string, file: File) => {
@@ -1281,6 +1326,24 @@ export default function PreacherSchedulesPage() {
                   <>
                     <i className="bi bi-save me-2"></i>
                     Simpan Jadual
+                  </>
+                )}
+              </button>
+              <button
+                className="btn btn-info"
+                onClick={copyFromPreviousMonth}
+                disabled={copyingFromPrev}
+                title="Copy jadual ceramah dari bulan sebelumnya"
+              >
+                {copyingFromPrev ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Menyalin...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-arrow-left-circle me-2"></i>
+                    Copy Bulan Lalu
                   </>
                 )}
               </button>
