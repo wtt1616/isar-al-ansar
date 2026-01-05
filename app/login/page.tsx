@@ -97,9 +97,12 @@ export default function LoginPage() {
     Asar: string;
     Maghrib: string;
     Isyak: string;
+    zoneName?: string;
   } | null>(null);
   const [prayerTimesLoading, setPrayerTimesLoading] = useState(true);
   const [nextPrayer, setNextPrayer] = useState<{ name: string; time: string; countdown: string } | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationStatus, setLocationStatus] = useState<'loading' | 'success' | 'denied' | 'error'>('loading');
   const router = useRouter();
   const prayerTableRef = useRef<HTMLDivElement>(null);
   const kuliahTableRef = useRef<HTMLDivElement>(null);
@@ -168,13 +171,16 @@ export default function LoginPage() {
     }
   };
 
-  // Fetch prayer times for Kajang, Selangor (zone SGR01)
+  // Get user location and fetch prayer times
   useEffect(() => {
-    const fetchPrayerTimes = async () => {
+    const fetchPrayerTimesWithLocation = async (lat?: number, lng?: number) => {
       try {
         setPrayerTimesLoading(true);
-        // Using JAKIM e-solat API for Kajang, Selangor (zone SGR01)
-        const res = await fetch('/api/prayer-times');
+        let url = '/api/prayer-times';
+        if (lat !== undefined && lng !== undefined) {
+          url += `?lat=${lat}&lng=${lng}`;
+        }
+        const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
           setPrayerTimesData(data);
@@ -185,7 +191,37 @@ export default function LoginPage() {
         setPrayerTimesLoading(false);
       }
     };
-    fetchPrayerTimes();
+
+    // Try to get user location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+          setLocationStatus('success');
+          fetchPrayerTimesWithLocation(latitude, longitude);
+        },
+        (error) => {
+          console.log('Geolocation error:', error.message);
+          if (error.code === error.PERMISSION_DENIED) {
+            setLocationStatus('denied');
+          } else {
+            setLocationStatus('error');
+          }
+          // Fallback to default zone (Kajang)
+          fetchPrayerTimesWithLocation();
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 10000,
+          maximumAge: 300000 // Cache for 5 minutes
+        }
+      );
+    } else {
+      setLocationStatus('error');
+      // Fallback to default zone
+      fetchPrayerTimesWithLocation();
+    }
   }, []);
 
   // Countdown to next prayer time
@@ -738,7 +774,12 @@ export default function LoginPage() {
           <div className="d-flex align-items-center justify-content-center flex-wrap gap-2 gap-md-4">
             <div className="d-flex align-items-center text-white me-2">
               <i className="bi bi-clock-fill me-2" style={{ fontSize: '1rem' }}></i>
-              <span className="fw-bold" style={{ fontSize: '0.85rem' }}>Waktu Solat Kajang</span>
+              <span className="fw-bold" style={{ fontSize: '0.85rem' }}>
+                Waktu Solat {prayerTimesData?.zoneName ? prayerTimesData.zoneName.split(',')[0] : 'Malaysia'}
+              </span>
+              {locationStatus === 'success' && (
+                <i className="bi bi-geo-alt-fill text-warning ms-1" style={{ fontSize: '0.7rem' }} title="Berdasarkan lokasi anda"></i>
+              )}
             </div>
             {prayerTimesLoading ? (
               <div className="d-flex align-items-center text-white">
