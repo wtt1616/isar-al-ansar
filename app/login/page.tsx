@@ -773,6 +773,12 @@ export default function LoginPage() {
         <div className="container-fluid">
           <div className="d-flex align-items-center justify-content-center flex-wrap gap-2 gap-md-4">
             <div className="d-flex align-items-center text-white me-2">
+              <i className="bi bi-calendar3 me-2" style={{ fontSize: '1rem' }}></i>
+              <span style={{ fontSize: '0.8rem' }}>
+                {new Date().toLocaleDateString('ms-MY', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+              </span>
+            </div>
+            <div className="d-flex align-items-center text-white me-2">
               <i className="bi bi-clock-fill me-2" style={{ fontSize: '1rem' }}></i>
               <span className="fw-bold" style={{ fontSize: '0.85rem' }}>
                 Waktu Solat {prayerTimesData?.zoneName ? prayerTimesData.zoneName.split(',')[0] : 'Malaysia'}
