@@ -61,7 +61,7 @@ export default function PublicHelpPage() {
     },
     {
       question: 'Siapa yang boleh saya hubungi untuk pertanyaan lanjut?',
-      answer: 'Anda boleh menghubungi pihak surau melalui borang maklum balas atau datang terus ke surau pada waktu pejabat.'
+      answer: 'Anda boleh menghubungi Pengerusi (Rozaimi Bin Mohd Said) atau Setiausaha (Hj Azhan Bin Daud), atau datang terus ke Surau Al-Ansar di Jalan Suakasih 2/3, Bandar Tun Hussein Onn, 43200 Cheras.'
     },
     {
       question: 'Adakah maklumat peribadi saya selamat?',
@@ -82,11 +82,21 @@ export default function PublicHelpPage() {
       description: 'Maklumat asas tentang sistem',
       content: (
         <div>
-          <h4>Selamat Datang ke Sistem iSAR</h4>
+          <h4>Selamat Datang ke Sistem iSAR - Surau Al-Ansar</h4>
           <p>
             Sistem iSAR (Islamic Surau Administration & Roster) menyediakan pelbagai perkhidmatan
-            untuk orang awam bagi memudahkan urusan dengan pihak surau.
+            untuk orang awam bagi memudahkan urusan dengan pihak Surau Al-Ansar, Bandar Tun Hussein Onn.
           </p>
+
+          <div className="alert alert-light border mt-3">
+            <h6 className="mb-2"><i className="bi bi-geo-alt me-2 text-danger"></i>Alamat Surau:</h6>
+            <p className="mb-2">Jalan Suakasih 2/3, Bandar Tun Hussein Onn, 43200 Cheras, Selangor</p>
+            <h6 className="mb-2"><i className="bi bi-people me-2 text-primary"></i>Hubungi:</h6>
+            <ul className="mb-0">
+              <li><strong>Pengerusi:</strong> Rozaimi Bin Mohd Said</li>
+              <li><strong>Setiausaha:</strong> Hj Azhan Bin Daud</li>
+            </ul>
+          </div>
 
           <h5 className="mt-4">Perkhidmatan Yang Disediakan:</h5>
           <div className="row g-3 mt-2">
@@ -157,8 +167,8 @@ export default function PublicHelpPage() {
       description: 'Cara mohon penggunaan surau',
       content: (
         <div>
-          <h4>Permohonan Penggunaan Surau</h4>
-          <p>Anda boleh memohon untuk menggunakan ruang surau bagi mengadakan majlis keagamaan.</p>
+          <h4>Permohonan Penggunaan Surau Al-Ansar</h4>
+          <p>Anda boleh memohon untuk menggunakan ruang Surau Al-Ansar bagi mengadakan majlis keagamaan.</p>
 
           <h5 className="mt-4"><i className="bi bi-list-ol me-2"></i>Langkah-langkah Permohonan:</h5>
           <ol className="mt-3">
@@ -259,13 +269,13 @@ export default function PublicHelpPage() {
       description: 'Pendaftaran ahli khairat',
       content: (
         <div>
-          <h4>Khairat Kematian</h4>
-          <p>Daftar sebagai ahli khairat kematian surau untuk mendapat manfaat bantuan kewangan ketika kematian.</p>
+          <h4>Khairat Kematian Surau Al-Ansar</h4>
+          <p>Daftar sebagai ahli khairat kematian Surau Al-Ansar untuk mendapat manfaat bantuan kewangan ketika kematian.</p>
 
           <h5 className="mt-4"><i className="bi bi-gift me-2"></i>Manfaat Ahli:</h5>
           <ul>
             <li>Bantuan kewangan untuk urusan pengebumian</li>
-            <li>Sokongan dari komuniti surau</li>
+            <li>Sokongan dari komuniti Surau Al-Ansar</li>
             <li>Keahlian untuk seluruh keluarga (termasuk tanggungan)</li>
           </ul>
 
@@ -370,7 +380,7 @@ export default function PublicHelpPage() {
       content: (
         <div>
           <h4>Kalendar Aktiviti</h4>
-          <p>Lihat jadual aktiviti dan program yang dianjurkan oleh surau.</p>
+          <p>Lihat jadual aktiviti dan program yang dianjurkan oleh Surau Al-Ansar.</p>
 
           <h5 className="mt-4"><i className="bi bi-calendar-check me-2"></i>Jenis Aktiviti:</h5>
           <ul>
@@ -424,12 +434,34 @@ export default function PublicHelpPage() {
           </ol>
 
           <h5 className="mt-4"><i className="bi bi-heart me-2"></i>Buat Sumbangan:</h5>
-          <p>Untuk menyumbang kepada tabung surau:</p>
+          <p>Untuk menyumbang kepada tabung Surau Al-Ansar:</p>
+
+          <div className="card bg-light mt-3">
+            <div className="card-body">
+              <h6><i className="bi bi-bank me-2 text-warning"></i>Maklumat Akaun Bank:</h6>
+              <table className="table table-borderless mb-0">
+                <tbody>
+                  <tr>
+                    <td width="120"><strong>Bank:</strong></td>
+                    <td>Maybank</td>
+                  </tr>
+                  <tr>
+                    <td><strong>No. Akaun:</strong></td>
+                    <td><code className="fs-5">5648-5610-7697</code></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Nama:</strong></td>
+                    <td>Surau Al-Ansar</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <ol className="mt-3">
-            <li className="mb-2">Layari halaman <strong>Sumbang & Derma</strong></li>
-            <li className="mb-2">Pilih tab <strong>"Sumbangan"</strong></li>
-            <li className="mb-2">Lihat maklumat akaun bank surau</li>
-            <li className="mb-2">Imbas kod QR untuk pembayaran mudah</li>
+            <li className="mb-2">Buat pemindahan ke akaun di atas</li>
+            <li className="mb-2">Layari halaman <strong>Sumbang & Derma</strong> untuk imbas kod QR</li>
+            <li className="mb-2">Simpan resit sebagai bukti pembayaran</li>
           </ol>
 
           <div className="alert alert-success mt-3">
@@ -641,10 +673,14 @@ export default function PublicHelpPage() {
                       <i className="bi bi-headset me-2"></i>
                       Perlukan Bantuan Lanjut?
                     </h5>
-                    <p className="text-muted mb-0">
-                      Jika anda mempunyai soalan lain, sila hubungi pihak surau atau
-                      hantar maklum balas melalui sistem.
+                    <p className="text-muted mb-2">
+                      Hubungi pihak Surau Al-Ansar untuk sebarang pertanyaan:
                     </p>
+                    <ul className="mb-0 small">
+                      <li><strong>Pengerusi:</strong> Rozaimi Bin Mohd Said</li>
+                      <li><strong>Setiausaha:</strong> Hj Azhan Bin Daud</li>
+                      <li><strong>Alamat:</strong> Jalan Suakasih 2/3, Bandar Tun Hussein Onn, 43200 Cheras</li>
+                    </ul>
                   </div>
                   <div className="col-md-4 text-md-end mt-3 mt-md-0">
                     <Link href="/maklumbalas" className="btn btn-primary">
@@ -664,9 +700,9 @@ export default function PublicHelpPage() {
         <div className="container">
           <div className="row">
             <div className="col-md-6">
-              <h6><i className="bi bi-mosque me-2"></i>Sistem iSAR</h6>
+              <h6><i className="bi bi-mosque me-2"></i>Surau Al-Ansar</h6>
               <p className="small text-muted mb-0">
-                Sistem Pengurusan Surau Bersepadu
+                Jalan Suakasih 2/3, Bandar Tun Hussein Onn, 43200 Cheras, Selangor
               </p>
             </div>
             <div className="col-md-6 text-md-end">
@@ -678,7 +714,7 @@ export default function PublicHelpPage() {
           <hr className="my-3 border-secondary" />
           <div className="text-center text-muted small">
             <i className="bi bi-info-circle me-1"></i>
-            Sistem iSAR v1.5 | Hak Cipta Terpelihara
+            Sistem iSAR - Surau Al-Ansar | Hak Cipta Terpelihara
           </div>
         </div>
       </footer>
