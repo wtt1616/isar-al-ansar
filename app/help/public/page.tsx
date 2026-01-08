@@ -70,6 +70,22 @@ export default function PublicHelpPage() {
     {
       question: 'Bagaimana untuk memohon bantuan kewangan?',
       answer: 'Layari halaman Sumbang & Derma, pilih tab "Mohon Bantuan", isi borang permohonan dengan lengkap, dan tunggu maklum balas dari pihak surau.'
+    },
+    {
+      question: 'Bagaimana untuk menjual produk di Komuniti2u?',
+      answer: 'Layari halaman Komuniti2u, klik "Daftar Sebagai Penjual", isi maklumat perniagaan anda, dan tunggu kelulusan dari admin. Selepas diluluskan, anda boleh mula memuat naik produk untuk dijual.'
+    },
+    {
+      question: 'Apakah jenis produk yang boleh dijual di Komuniti2u?',
+      answer: 'Hanya produk halal dan patuh syariah dibenarkan. Kategori termasuk makanan & minuman, pakaian, buku, produk kesihatan, dan lain-lain. Produk yang tidak halal atau melanggar syariat tidak dibenarkan.'
+    },
+    {
+      question: 'Bagaimana untuk melihat maklumat tender surau?',
+      answer: 'Layari halaman Tender untuk melihat senarai tender yang sedang dibuka. Klik pada tender yang diminati untuk maklumat lanjut dan cara menghantar sebutharga.'
+    },
+    {
+      question: 'Bagaimana untuk menyumbang infaq?',
+      answer: 'Anda boleh menyumbang melalui pemindahan bank ke akaun Maybank 5648-5610-7697 (Surau Al-Ansar), atau imbas kod QR yang disediakan di halaman Infaq.'
     }
   ];
 
@@ -153,6 +169,30 @@ export default function PublicHelpPage() {
                 <div className="card-body">
                   <h6><i className="bi bi-gift me-2" style={{ color: '#059669' }}></i>Sumbang & Derma</h6>
                   <p className="small text-muted mb-0">Mohon bantuan atau buat sumbangan</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="card h-100" style={{ borderColor: '#6f42c1' }}>
+                <div className="card-body">
+                  <h6><i className="bi bi-shop me-2" style={{ color: '#6f42c1' }}></i>Komuniti2u</h6>
+                  <p className="small text-muted mb-0">Platform jual beli komuniti surau</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="card h-100" style={{ borderColor: '#fd7e14' }}>
+                <div className="card-body">
+                  <h6><i className="bi bi-file-earmark-text me-2" style={{ color: '#fd7e14' }}></i>Tender</h6>
+                  <p className="small text-muted mb-0">Maklumat sebutharga dan tender</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="card h-100" style={{ borderColor: '#20c997' }}>
+                <div className="card-body">
+                  <h6><i className="bi bi-cash-coin me-2" style={{ color: '#20c997' }}></i>Infaq</h6>
+                  <p className="small text-muted mb-0">Sumbangan infaq untuk surau</p>
                 </div>
               </div>
             </div>
@@ -407,6 +447,238 @@ export default function PublicHelpPage() {
       )
     },
     {
+      id: 'komuniti2u',
+      title: 'Komuniti2u',
+      icon: 'bi-shop',
+      description: 'Platform jual beli komuniti',
+      content: (
+        <div>
+          <h4>Komuniti2u - Platform Jual Beli Komuniti</h4>
+          <p>Platform e-dagang untuk komuniti Surau Al-Ansar menjual dan membeli produk secara dalam talian.</p>
+
+          <h5 className="mt-4"><i className="bi bi-bag-check me-2"></i>Kategori Produk:</h5>
+          <div className="row g-2 mt-2">
+            <div className="col-6 col-md-4">
+              <div className="card text-center p-2">
+                <i className="bi bi-basket fs-4 text-success"></i>
+                <small>Makanan & Minuman</small>
+              </div>
+            </div>
+            <div className="col-6 col-md-4">
+              <div className="card text-center p-2">
+                <i className="bi bi-flower1 fs-4 text-info"></i>
+                <small>Kecantikan & Kesihatan</small>
+              </div>
+            </div>
+            <div className="col-6 col-md-4">
+              <div className="card text-center p-2">
+                <i className="bi bi-bag fs-4 text-warning"></i>
+                <small>Pakaian & Tudung</small>
+              </div>
+            </div>
+            <div className="col-6 col-md-4">
+              <div className="card text-center p-2">
+                <i className="bi bi-book fs-4 text-primary"></i>
+                <small>Buku & Kitab</small>
+              </div>
+            </div>
+            <div className="col-6 col-md-4">
+              <div className="card text-center p-2">
+                <i className="bi bi-droplet fs-4 text-secondary"></i>
+                <small>Perfume & Attar</small>
+              </div>
+            </div>
+            <div className="col-6 col-md-4">
+              <div className="card text-center p-2">
+                <i className="bi bi-grid fs-4 text-danger"></i>
+                <small>Lain-lain</small>
+              </div>
+            </div>
+          </div>
+
+          <h5 className="mt-4"><i className="bi bi-person-plus me-2"></i>Daftar Sebagai Penjual:</h5>
+          <ol className="mt-3">
+            <li className="mb-2">Layari halaman <strong>Komuniti2u</strong></li>
+            <li className="mb-2">Klik butang <strong>"Daftar Sebagai Penjual"</strong></li>
+            <li className="mb-2">Isi maklumat perniagaan:
+              <ul>
+                <li>Nama perniagaan</li>
+                <li>No. telefon</li>
+                <li>Kategori produk</li>
+                <li>Keterangan perniagaan</li>
+              </ul>
+            </li>
+            <li className="mb-2">Tunggu kelulusan dari admin</li>
+            <li className="mb-2">Mula muat naik produk untuk dijual</li>
+          </ol>
+
+          <div className="alert alert-info mt-3">
+            <i className="bi bi-info-circle me-2"></i>
+            <strong>Nota:</strong> Hanya produk halal dan patuh syariah dibenarkan dijual di platform ini.
+          </div>
+
+          <div className="mt-4">
+            <Link href="/komuniti2u" className="btn me-2" style={{ backgroundColor: '#6f42c1', color: 'white' }}>
+              <i className="bi bi-shop me-2"></i>
+              Layari Komuniti2u
+            </Link>
+            <Link href="/komuniti2u/seller" className="btn btn-outline-secondary">
+              <i className="bi bi-person-plus me-2"></i>
+              Daftar Penjual
+            </Link>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'tender',
+      title: 'Tender & Sebutharga',
+      icon: 'bi-file-earmark-text',
+      description: 'Maklumat tender surau',
+      content: (
+        <div>
+          <h4>Tender & Sebutharga</h4>
+          <p>Maklumat tender dan sebutharga untuk kerja-kerja pembangunan dan penyelenggaraan Surau Al-Ansar.</p>
+
+          <h5 className="mt-4"><i className="bi bi-list-check me-2"></i>Jenis Tender:</h5>
+          <ul>
+            <li>Kerja pembinaan dan pengubahsuaian</li>
+            <li>Kerja penyelenggaraan bangunan</li>
+            <li>Pembekalan peralatan surau</li>
+            <li>Perkhidmatan pembersihan</li>
+            <li>Kerja-kerja landskap</li>
+            <li>Lain-lain perkhidmatan</li>
+          </ul>
+
+          <h5 className="mt-4"><i className="bi bi-clipboard-check me-2"></i>Cara Memohon Tender:</h5>
+          <ol className="mt-3">
+            <li className="mb-2">Layari halaman <strong>Tender</strong></li>
+            <li className="mb-2">Lihat senarai tender yang dibuka</li>
+            <li className="mb-2">Klik tender yang diminati untuk maklumat lanjut</li>
+            <li className="mb-2">Muat turun dokumen tender (jika ada)</li>
+            <li className="mb-2">Hantar sebutharga sebelum tarikh tutup</li>
+          </ol>
+
+          <div className="alert alert-warning mt-3">
+            <i className="bi bi-exclamation-triangle me-2"></i>
+            <strong>Penting:</strong> Pastikan sebutharga dihantar sebelum tarikh tutup. Sebutharga yang lewat tidak akan dipertimbangkan.
+          </div>
+
+          <div className="mt-4">
+            <Link href="/tender" className="btn" style={{ backgroundColor: '#fd7e14', color: 'white' }}>
+              <i className="bi bi-file-earmark-text me-2"></i>
+              Lihat Senarai Tender
+            </Link>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'infaq',
+      title: 'Infaq',
+      icon: 'bi-cash-coin',
+      description: 'Sumbangan infaq untuk surau',
+      content: (
+        <div>
+          <h4>Infaq - Sumbangan Ikhlas</h4>
+          <p>Menyumbang infaq untuk pembangunan dan penyelenggaraan Surau Al-Ansar.</p>
+
+          <h5 className="mt-4"><i className="bi bi-heart me-2"></i>Kelebihan Berinfaq:</h5>
+          <ul>
+            <li>Pahala berterusan (sadaqah jariah)</li>
+            <li>Membantu pembangunan rumah Allah</li>
+            <li>Menyokong aktiviti dakwah dan pendidikan</li>
+            <li>Membantu golongan yang memerlukan</li>
+          </ul>
+
+          <h5 className="mt-4"><i className="bi bi-bank me-2"></i>Cara Berinfaq:</h5>
+
+          <div className="card bg-light mt-3">
+            <div className="card-body">
+              <h6><i className="bi bi-credit-card me-2 text-warning"></i>Maklumat Akaun Bank:</h6>
+              <table className="table table-borderless mb-0">
+                <tbody>
+                  <tr>
+                    <td width="120"><strong>Bank:</strong></td>
+                    <td>Maybank</td>
+                  </tr>
+                  <tr>
+                    <td><strong>No. Akaun:</strong></td>
+                    <td><code className="fs-5">5648-5610-7697</code></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Nama:</strong></td>
+                    <td>Surau Al-Ansar</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <ol className="mt-3">
+            <li className="mb-2">Buat pemindahan ke akaun di atas</li>
+            <li className="mb-2">Atau imbas kod QR di halaman Infaq</li>
+            <li className="mb-2">Simpan resit sebagai bukti pembayaran</li>
+          </ol>
+
+          <div className="alert alert-success mt-3">
+            <i className="bi bi-quote me-2"></i>
+            <em>"Perumpamaan orang yang menginfakkan hartanya di jalan Allah seperti sebutir biji yang menumbuhkan tujuh tangkai, pada setiap tangkai ada seratus biji."</em> - Al-Baqarah: 261
+          </div>
+
+          <div className="mt-4">
+            <Link href="/infaq" className="btn" style={{ backgroundColor: '#20c997', color: 'white' }}>
+              <i className="bi bi-cash-coin me-2"></i>
+              Halaman Infaq
+            </Link>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'soalan-agama',
+      title: 'Soalan Agama',
+      icon: 'bi-book',
+      description: 'Hantar soalan berkaitan agama',
+      content: (
+        <div>
+          <h4>Soalan Agama</h4>
+          <p>Hantar soalan berkaitan agama Islam untuk dijawab oleh pihak surau.</p>
+
+          <h5 className="mt-4"><i className="bi bi-chat-dots me-2"></i>Jenis Soalan:</h5>
+          <ul>
+            <li>Soalan berkaitan ibadah (solat, puasa, zakat, haji)</li>
+            <li>Soalan berkaitan muamalat (jual beli, pinjaman)</li>
+            <li>Soalan berkaitan akidah dan tauhid</li>
+            <li>Soalan berkaitan akhlak dan adab</li>
+            <li>Soalan berkaitan keluarga dan perkahwinan</li>
+            <li>Lain-lain soalan agama</li>
+          </ul>
+
+          <h5 className="mt-4"><i className="bi bi-list-ol me-2"></i>Cara Menghantar Soalan:</h5>
+          <ol className="mt-3">
+            <li className="mb-2">Layari halaman <strong>Soalan Agama</strong></li>
+            <li className="mb-2">Isi maklumat anda (nama dan no. telefon)</li>
+            <li className="mb-2">Tulis soalan dengan jelas dan terperinci</li>
+            <li className="mb-2">Klik <strong>"Hantar Soalan"</strong></li>
+            <li className="mb-2">Tunggu jawapan dari pihak surau</li>
+          </ol>
+
+          <div className="alert alert-info mt-3">
+            <i className="bi bi-info-circle me-2"></i>
+            <strong>Nota:</strong> Jawapan akan dihantar melalui WhatsApp atau telefon yang diberikan. Soalan yang bersifat umum mungkin akan dikongsi untuk manfaat bersama.
+          </div>
+
+          <div className="mt-4">
+            <Link href="/soalan-agama" className="btn btn-danger">
+              <i className="bi bi-book me-2"></i>
+              Hantar Soalan Agama
+            </Link>
+          </div>
+        </div>
+      )
+    },
+    {
       id: 'sumbang',
       title: 'Sumbang & Derma',
       icon: 'bi-gift',
@@ -647,6 +919,18 @@ export default function PublicHelpPage() {
                 </Link>
                 <Link href="/sumbang-derma" className="list-group-item list-group-item-action">
                   <i className="bi bi-gift me-2 text-success"></i>Sumbang & Derma
+                </Link>
+                <Link href="/komuniti2u" className="list-group-item list-group-item-action">
+                  <i className="bi bi-shop me-2" style={{ color: '#6f42c1' }}></i>Komuniti2u
+                </Link>
+                <Link href="/tender" className="list-group-item list-group-item-action">
+                  <i className="bi bi-file-earmark-text me-2" style={{ color: '#fd7e14' }}></i>Tender
+                </Link>
+                <Link href="/infaq" className="list-group-item list-group-item-action">
+                  <i className="bi bi-cash-coin me-2" style={{ color: '#20c997' }}></i>Infaq
+                </Link>
+                <Link href="/soalan-agama" className="list-group-item list-group-item-action">
+                  <i className="bi bi-book me-2 text-danger"></i>Soalan Agama
                 </Link>
               </div>
             </div>
