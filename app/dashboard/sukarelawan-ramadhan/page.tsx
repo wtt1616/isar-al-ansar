@@ -365,6 +365,9 @@ export default function SukarelawanRamadhanCombinedPage() {
           <p className="text-muted mb-0">Pengurusan pendaftaran sukarelawan</p>
         </div>
         <div className="d-flex gap-2">
+          <button className="btn btn-outline-secondary" onClick={() => router.push('/dashboard')}>
+            <i className="bi bi-arrow-left me-1"></i> Kembali
+          </button>
           <button className="btn btn-outline-primary" onClick={() => setShowSettingsModal(true)}>
             <i className="bi bi-gear me-1"></i> Tetapan
           </button>
