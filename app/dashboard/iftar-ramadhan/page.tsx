@@ -11,6 +11,9 @@ interface Submission {
   nama_pic: string;
   no_tel: string;
   alamat: string;
+  payment_status: 'pending' | 'paid' | 'cancelled';
+  payment_date: string | null;
+  payment_notes: string | null;
   created_at: string;
 }
 
@@ -38,6 +41,12 @@ export default function IftarDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<Submission | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentItem, setPaymentItem] = useState<Submission | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'paid' | 'cancelled'>('pending');
+  const [paymentNotes, setPaymentNotes] = useState('');
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'pending' | 'paid' | 'cancelled'>('all');
+  const [updating, setUpdating] = useState(false);
 
   const themeColor = '#e67e22';
   const themeBgLight = '#fef5e7';
@@ -91,6 +100,59 @@ export default function IftarDashboardPage() {
   const handleExport = () => {
     window.open('/api/dashboard/iftar-ramadhan/export', '_blank');
   };
+
+  const openPaymentModal = (item: Submission) => {
+    setPaymentItem(item);
+    setPaymentStatus(item.payment_status || 'pending');
+    setPaymentNotes(item.payment_notes || '');
+    setShowPaymentModal(true);
+  };
+
+  const handleUpdatePayment = async () => {
+    if (!paymentItem) return;
+
+    try {
+      setUpdating(true);
+      const res = await fetch('/api/dashboard/iftar-ramadhan', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: paymentItem.id,
+          payment_status: paymentStatus,
+          payment_notes: paymentNotes
+        })
+      });
+
+      if (res.ok) {
+        fetchData();
+        setShowPaymentModal(false);
+        alert('Status bayaran berjaya dikemaskini');
+      } else {
+        alert('Ralat semasa mengemaskini status bayaran');
+      }
+    } catch (error) {
+      console.error('Error updating payment:', error);
+      alert('Ralat semasa mengemaskini status bayaran');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const getPaymentStatusBadge = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return <span className="badge bg-success">Telah Bayar</span>;
+      case 'cancelled':
+        return <span className="badge bg-danger">Batal</span>;
+      default:
+        return <span className="badge bg-warning text-dark">Belum Bayar</span>;
+    }
+  };
+
+  const filteredSubmissions = submissions.filter(item => {
+    if (paymentFilter === 'all') return true;
+    return item.payment_status === paymentFilter;
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ms-MY', {
@@ -204,11 +266,46 @@ export default function IftarDashboardPage() {
         </div>
       )}
 
+      {/* Payment Filter */}
+      <div className="card mb-3">
+        <div className="card-body py-2">
+          <div className="d-flex align-items-center gap-3">
+            <span className="text-muted small">Tapis Status Bayaran:</span>
+            <div className="btn-group btn-group-sm">
+              <button
+                className={`btn ${paymentFilter === 'all' ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                onClick={() => setPaymentFilter('all')}
+              >
+                Semua ({submissions.length})
+              </button>
+              <button
+                className={`btn ${paymentFilter === 'pending' ? 'btn-warning' : 'btn-outline-warning'}`}
+                onClick={() => setPaymentFilter('pending')}
+              >
+                Belum Bayar ({submissions.filter(s => s.payment_status === 'pending' || !s.payment_status).length})
+              </button>
+              <button
+                className={`btn ${paymentFilter === 'paid' ? 'btn-success' : 'btn-outline-success'}`}
+                onClick={() => setPaymentFilter('paid')}
+              >
+                Telah Bayar ({submissions.filter(s => s.payment_status === 'paid').length})
+              </button>
+              <button
+                className={`btn ${paymentFilter === 'cancelled' ? 'btn-danger' : 'btn-outline-danger'}`}
+                onClick={() => setPaymentFilter('cancelled')}
+              >
+                Batal ({submissions.filter(s => s.payment_status === 'cancelled').length})
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Data Table */}
       <div className="card">
         <div className="card-header" style={{ backgroundColor: themeBgLight }}>
           <i className="bi bi-table me-2" style={{ color: themeColor }}></i>
-          Senarai Penaja ({submissions.length})
+          Senarai Penaja ({filteredSubmissions.length})
         </div>
         <div className="card-body p-0">
           <div className="table-responsive">
@@ -221,20 +318,21 @@ export default function IftarDashboardPage() {
                   <th>No. Tel</th>
                   <th>Jumlah Tajaan</th>
                   <th>Nilai</th>
+                  <th>Status Bayaran</th>
                   <th>Tarikh Daftar</th>
                   <th className="text-center">Tindakan</th>
                 </tr>
               </thead>
               <tbody>
-                {submissions.length === 0 ? (
+                {filteredSubmissions.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-4 text-muted">
+                    <td colSpan={9} className="text-center py-4 text-muted">
                       <i className="bi bi-inbox fs-1 d-block mb-2"></i>
                       Tiada penajaan dijumpai
                     </td>
                   </tr>
                 ) : (
-                  submissions.map((item, index) => (
+                  filteredSubmissions.map((item, index) => (
                     <tr key={item.id}>
                       <td>{index + 1}</td>
                       <td className="fw-medium">{item.nama_penaja}</td>
@@ -254,6 +352,15 @@ export default function IftarDashboardPage() {
                       </td>
                       <td className="fw-bold text-success">
                         {formatCurrency(getTotalForSubmission(item.jumlah_tajaan))}
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-sm p-0 border-0"
+                          onClick={() => openPaymentModal(item)}
+                          title="Klik untuk kemaskini status"
+                        >
+                          {getPaymentStatusBadge(item.payment_status)}
+                        </button>
                       </td>
                       <td className="small">
                         {new Date(item.created_at).toLocaleDateString('ms-MY', {
@@ -275,6 +382,13 @@ export default function IftarDashboardPage() {
                             title="Lihat Detail"
                           >
                             <i className="bi bi-eye"></i>
+                          </button>
+                          <button
+                            className="btn btn-outline-warning"
+                            onClick={() => openPaymentModal(item)}
+                            title="Kemaskini Bayaran"
+                          >
+                            <i className="bi bi-credit-card"></i>
                           </button>
                           <button
                             className="btn btn-outline-danger"
@@ -358,12 +472,146 @@ export default function IftarDashboardPage() {
                         })}
                       </td>
                     </tr>
+                    <tr>
+                      <td className="text-muted">Status Bayaran</td>
+                      <td>{getPaymentStatusBadge(selectedItem.payment_status)}</td>
+                    </tr>
+                    {selectedItem.payment_date && (
+                      <tr>
+                        <td className="text-muted">Tarikh Bayaran</td>
+                        <td>
+                          {new Date(selectedItem.payment_date).toLocaleDateString('ms-MY', {
+                            day: '2-digit',
+                            month: 'long',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </td>
+                      </tr>
+                    )}
+                    {selectedItem.payment_notes && (
+                      <tr>
+                        <td className="text-muted">Nota Bayaran</td>
+                        <td>{selectedItem.payment_notes}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
               <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-warning"
+                  onClick={() => {
+                    setShowModal(false);
+                    openPaymentModal(selectedItem);
+                  }}
+                >
+                  <i className="bi bi-credit-card me-1"></i>
+                  Kemaskini Bayaran
+                </button>
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
                   Tutup
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Modal */}
+      {showPaymentModal && paymentItem && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header" style={{ backgroundColor: themeBgLight }}>
+                <h5 className="modal-title">
+                  <i className="bi bi-credit-card me-2" style={{ color: themeColor }}></i>
+                  Kemaskini Status Bayaran
+                </h5>
+                <button className="btn-close" onClick={() => setShowPaymentModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <p className="mb-1"><strong>Penaja:</strong> {paymentItem.nama_penaja}</p>
+                  <p className="mb-0"><strong>Nilai:</strong> <span className="text-success fw-bold">{formatCurrency(getTotalForSubmission(paymentItem.jumlah_tajaan))}</span></p>
+                </div>
+                <hr />
+                <div className="mb-3">
+                  <label className="form-label fw-medium">Status Bayaran</label>
+                  <div className="d-flex gap-2">
+                    <button
+                      type="button"
+                      className={`btn flex-fill ${paymentStatus === 'pending' ? 'btn-warning' : 'btn-outline-warning'}`}
+                      onClick={() => setPaymentStatus('pending')}
+                    >
+                      <i className="bi bi-hourglass me-1"></i>
+                      Belum Bayar
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn flex-fill ${paymentStatus === 'paid' ? 'btn-success' : 'btn-outline-success'}`}
+                      onClick={() => setPaymentStatus('paid')}
+                    >
+                      <i className="bi bi-check-circle me-1"></i>
+                      Telah Bayar
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn flex-fill ${paymentStatus === 'cancelled' ? 'btn-danger' : 'btn-outline-danger'}`}
+                      onClick={() => setPaymentStatus('cancelled')}
+                    >
+                      <i className="bi bi-x-circle me-1"></i>
+                      Batal
+                    </button>
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label className="form-label fw-medium">Nota (opsional)</label>
+                  <textarea
+                    className="form-control"
+                    rows={3}
+                    value={paymentNotes}
+                    onChange={(e) => setPaymentNotes(e.target.value)}
+                    placeholder="Cth: Bayaran melalui online banking pada 15/1/2026"
+                  ></textarea>
+                </div>
+                {paymentItem.payment_date && (
+                  <div className="alert alert-info small mb-0">
+                    <i className="bi bi-info-circle me-1"></i>
+                    Tarikh bayaran terakhir: {new Date(paymentItem.payment_date).toLocaleDateString('ms-MY', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowPaymentModal(false)}>
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  className="btn"
+                  style={{ backgroundColor: themeColor, color: 'white' }}
+                  onClick={handleUpdatePayment}
+                  disabled={updating}
+                >
+                  {updating ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-1"></span>
+                      Menyimpan...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-check-lg me-1"></i>
+                      Simpan
+                    </>
+                  )}
                 </button>
               </div>
             </div>

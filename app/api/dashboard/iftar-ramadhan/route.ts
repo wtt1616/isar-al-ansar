@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 
     // Get all submissions
     const [submissions] = await pool.query<RowDataPacket[]>(
-      'SELECT id, data, created_at FROM custom_form_submissions WHERE form_id = ? ORDER BY created_at DESC',
+      'SELECT id, data, payment_status, payment_date, payment_notes, created_at FROM custom_form_submissions WHERE form_id = ? ORDER BY created_at DESC',
       [formId]
     );
 
@@ -67,6 +67,9 @@ export async function GET(request: NextRequest) {
         nama_pic: data[FIELD_IDS.nama_pic] || '',
         no_tel: data[FIELD_IDS.no_tel] || '',
         alamat: data[FIELD_IDS.alamat] || '',
+        payment_status: sub.payment_status || 'pending',
+        payment_date: sub.payment_date,
+        payment_notes: sub.payment_notes,
         created_at: sub.created_at
       };
     });
@@ -101,6 +104,39 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching iftar data:', error);
+    return NextResponse.json({ error: 'Ralat server' }, { status: 500 });
+  }
+}
+
+// PUT - Update payment status (admin only)
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { id, payment_status, payment_notes } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID diperlukan' }, { status: 400 });
+    }
+
+    if (!payment_status || !['pending', 'paid', 'cancelled'].includes(payment_status)) {
+      return NextResponse.json({ error: 'Status bayaran tidak sah' }, { status: 400 });
+    }
+
+    const payment_date = payment_status === 'paid' ? new Date() : null;
+
+    await pool.query<ResultSetHeader>(
+      'UPDATE custom_form_submissions SET payment_status = ?, payment_date = ?, payment_notes = ? WHERE id = ?',
+      [payment_status, payment_date, payment_notes || null, id]
+    );
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating payment status:', error);
     return NextResponse.json({ error: 'Ralat server' }, { status: 500 });
   }
 }
