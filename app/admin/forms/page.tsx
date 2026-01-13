@@ -18,6 +18,11 @@ interface CustomForm {
   created_at: string;
 }
 
+// Mapping of form slugs to their dashboard URLs
+const FORM_DASHBOARDS: { [slug: string]: string } = {
+  'iftar-al-ansar-2026': '/dashboard/iftar-ramadhan'
+};
+
 export default function FormsListPage() {
   const { data: session, status: authStatus } = useSession();
   const router = useRouter();
@@ -277,6 +282,15 @@ export default function FormsListPage() {
                 </div>
                 <div className="card-footer bg-transparent border-top-0">
                   <div className="d-flex gap-2">
+                    {FORM_DASHBOARDS[form.slug] && (
+                      <Link
+                        href={FORM_DASHBOARDS[form.slug]}
+                        className="btn btn-success btn-sm"
+                        title="Dashboard"
+                      >
+                        <i className="bi bi-speedometer2"></i>
+                      </Link>
+                    )}
                     <Link
                       href={`/admin/forms/${form.id}/submissions`}
                       className="btn btn-outline-primary btn-sm flex-grow-1"
