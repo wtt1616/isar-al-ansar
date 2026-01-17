@@ -26,8 +26,8 @@ export async function GET(request: NextRequest) {
     }
 
     if (hari && hari !== 'all') {
-      whereClause += ' AND hari_bertugas = ?';
-      params.push(hari);
+      whereClause += ' AND hari_bertugas LIKE ?';
+      params.push(`%${hari}%`);
     }
 
     const [rows] = await pool.query<RowDataPacket[]>(
@@ -46,14 +46,30 @@ export async function GET(request: NextRequest) {
       [tahun]
     );
 
-    // Get count by hari
-    const [hariStats] = await pool.query<RowDataPacket[]>(
-      `SELECT hari_bertugas, COUNT(*) as count
-       FROM sukarelawan_ramadhan
-       WHERE tahun = ? AND status = 'approved'
-       GROUP BY hari_bertugas`,
+    // Get count by hari - split comma-separated values and count each day
+    const [approvedRows] = await pool.query<RowDataPacket[]>(
+      `SELECT hari_bertugas FROM sukarelawan_ramadhan WHERE tahun = ? AND status = 'approved'`,
       [tahun]
     );
+
+    // Count each day separately
+    const hariCount: { [key: string]: number } = {};
+    for (const row of approvedRows) {
+      if (row.hari_bertugas) {
+        const days = row.hari_bertugas.split(',').map((d: string) => d.trim());
+        for (const day of days) {
+          if (day) {
+            hariCount[day] = (hariCount[day] || 0) + 1;
+          }
+        }
+      }
+    }
+
+    // Convert to array format
+    const hariStats = Object.entries(hariCount).map(([hari_bertugas, count]) => ({
+      hari_bertugas,
+      count
+    }));
 
     // Get count by size
     const [sizeStats] = await pool.query<RowDataPacket[]>(
