@@ -94,7 +94,7 @@ export default function SukarelawanRamadhanCombinedPage() {
     no_telefon: '',
     zon_tempat_tinggal: '',
     size_baju: '',
-    hari_bertugas: ''
+    hari_bertugas: [] as string[]
   });
 
   // Get current data based on active tab
@@ -264,13 +264,17 @@ export default function SukarelawanRamadhanCombinedPage() {
   };
 
   const handleEdit = (item: Sukarelawan) => {
+    // Split comma-separated days into array
+    const hariArray = item.hari_bertugas
+      ? item.hari_bertugas.split(',').map(h => h.trim()).filter(h => h)
+      : [];
     setEditFormData({
       id: item.id,
       nama_penuh: item.nama_penuh,
       no_telefon: item.no_telefon,
       zon_tempat_tinggal: item.zon_tempat_tinggal,
       size_baju: item.size_baju,
-      hari_bertugas: item.hari_bertugas
+      hari_bertugas: hariArray
     });
     setShowEditModal(true);
   };
@@ -291,7 +295,7 @@ export default function SukarelawanRamadhanCombinedPage() {
           no_telefon: editFormData.no_telefon,
           zon_tempat_tinggal: editFormData.zon_tempat_tinggal,
           size_baju: editFormData.size_baju,
-          hari_bertugas: editFormData.hari_bertugas
+          hari_bertugas: editFormData.hari_bertugas.join(', ')
         })
       });
 
@@ -802,18 +806,56 @@ export default function SukarelawanRamadhanCombinedPage() {
                       ))}
                     </select>
                   </div>
-                  <div className="col-md-6">
+                  <div className="col-12">
                     <label className="form-label fw-semibold">Hari Bertugas</label>
-                    <select
-                      className="form-select"
-                      value={editFormData.hari_bertugas}
-                      onChange={(e) => setEditFormData(prev => ({ ...prev, hari_bertugas: e.target.value }))}
-                    >
-                      <option value="">-- Pilih Hari --</option>
-                      {HARI_OPTIONS.map(hari => (
-                        <option key={hari} value={hari}>{hari}</option>
-                      ))}
-                    </select>
+                    <p className="text-muted small mb-2">
+                      <i className="bi bi-info-circle me-1"></i>
+                      Boleh pilih lebih dari satu hari
+                    </p>
+                    <div className="row g-2">
+                      {HARI_OPTIONS.map(hari => {
+                        const isSelected = editFormData.hari_bertugas.includes(hari);
+                        return (
+                          <div key={hari} className="col-6 col-md-3">
+                            <input
+                              type="checkbox"
+                              className="btn-check"
+                              id={`edit-hari-${hari}`}
+                              checked={isSelected}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setEditFormData(prev => ({
+                                    ...prev,
+                                    hari_bertugas: [...prev.hari_bertugas, hari]
+                                  }));
+                                } else {
+                                  setEditFormData(prev => ({
+                                    ...prev,
+                                    hari_bertugas: prev.hari_bertugas.filter(h => h !== hari)
+                                  }));
+                                }
+                              }}
+                            />
+                            <label
+                              className={`btn w-100 ${isSelected ? 'btn-success' : 'btn-outline-success'}`}
+                              htmlFor={`edit-hari-${hari}`}
+                              style={isSelected ? { backgroundColor: themeColor, borderColor: themeColor } : {}}
+                            >
+                              {isSelected && <i className="bi bi-check-lg me-1"></i>}
+                              {hari}
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {editFormData.hari_bertugas.length > 0 && (
+                      <div className="mt-2">
+                        <small className="text-success">
+                          <i className="bi bi-check-circle me-1"></i>
+                          Dipilih: {editFormData.hari_bertugas.join(', ')}
+                        </small>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
