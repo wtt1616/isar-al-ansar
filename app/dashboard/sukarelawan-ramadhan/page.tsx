@@ -633,7 +633,7 @@ export default function SukarelawanRamadhanCombinedPage() {
                       <td>{index + 1}</td>
                       <td className="fw-medium">{item.nama_penuh}</td>
                       <td>
-                        <a href={`https://wa.me/6${item.no_telefon.replace(/^0/, '').replace(/-/g, '')}`} target="_blank" className="text-decoration-none">
+                        <a href={`https://wa.me/6${item.no_telefon.replace(/-/g, '').replace(/\s/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-decoration-none">
                           <i className="bi bi-whatsapp text-success me-1"></i>
                           {item.no_telefon}
                         </a>
