@@ -338,7 +338,7 @@ export default function IftarDashboardPage() {
                       <td className="fw-medium">{item.nama_penaja}</td>
                       <td>{item.nama_pic || '-'}</td>
                       <td>
-                        <a href={`https://wa.me/6${item.no_tel.replace(/^0/, '').replace(/-/g, '')}`} target="_blank" className="text-decoration-none">
+                        <a href={`https://wa.me/6${item.no_tel.replace(/-/g, '').replace(/\s/g, '')}`} target="_blank" className="text-decoration-none">
                           <i className="bi bi-whatsapp text-success me-1"></i>
                           {item.no_tel}
                         </a>
@@ -434,7 +434,7 @@ export default function IftarDashboardPage() {
                     <tr>
                       <td className="text-muted">No. Telefon</td>
                       <td>
-                        <a href={`https://wa.me/6${selectedItem.no_tel.replace(/^0/, '').replace(/-/g, '')}`} target="_blank" className="text-decoration-none">
+                        <a href={`https://wa.me/6${selectedItem.no_tel.replace(/-/g, '').replace(/\s/g, '')}`} target="_blank" className="text-decoration-none">
                           <i className="bi bi-whatsapp text-success me-1"></i>
                           {selectedItem.no_tel}
                         </a>
