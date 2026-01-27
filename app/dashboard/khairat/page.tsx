@@ -349,9 +349,9 @@ export default function AdminKhairatPage() {
           <div>
             <h4 className="mb-0">
               <i className="bi bi-people me-2"></i>
-              Pengurusan Khairat Kematian
+              Badan Khairat Kematian
             </h4>
-            <small className="text-muted">Urus permohonan keahlian dan pembayaran yuran tahunan</small>
+            <small className="text-muted">Kariah Masjid BTHO - Urus permohonan keahlian dan pembayaran yuran</small>
           </div>
         </div>
         <div className="d-flex gap-2">
@@ -359,7 +359,7 @@ export default function AdminKhairatPage() {
             <i className="bi bi-cloud-upload me-2"></i>
             Muat Naik Data Excel
           </Link>
-          <Link href="/khairat/daftar" target="_blank" className="btn btn-outline-primary">
+          <Link href="/khairat" target="_blank" className="btn btn-outline-primary">
             <i className="bi bi-box-arrow-up-right me-2"></i>
             Lihat Borang Awam
           </Link>
