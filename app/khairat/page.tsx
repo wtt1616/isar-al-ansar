@@ -257,44 +257,152 @@ export default function KhairatPublicPage() {
   // Menu Page
   if (mode === 'menu') {
     return (
-      <div className="min-vh-100 bg-light d-flex align-items-center justify-content-center p-4">
-        <div className="card shadow-lg" style={{ maxWidth: '500px', width: '100%' }}>
-          <div className="card-body text-center py-5">
-            <div className="mb-4">
-              <i className="bi bi-people-fill text-success" style={{ fontSize: '4rem' }}></i>
-            </div>
-            <h3 className="fw-bold text-success mb-2">Khairat Kematian</h3>
-            <p className="text-muted mb-4">Surau Al-Ansar</p>
+      <div className="min-vh-100 bg-light py-4">
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-8">
+              {/* Header Card */}
+              <div className="card shadow-lg mb-4">
+                <div className="card-body text-center py-4">
+                  <div className="mb-3">
+                    <i className="bi bi-people-fill text-success" style={{ fontSize: '3.5rem' }}></i>
+                  </div>
+                  <h3 className="fw-bold text-success mb-2">Badan Khairat Kematian</h3>
+                  <p className="text-muted mb-0">Kariah Masjid BTHO</p>
+                </div>
+              </div>
 
-            <div className="d-grid gap-3">
-              <button
-                className="btn btn-primary btn-lg py-3"
-                onClick={() => setMode('search')}
-              >
-                <i className="bi bi-search me-2"></i>
-                Semak Status Keahlian
-                <br />
-                <small className="fw-normal">Cari menggunakan No. K/P</small>
-              </button>
+              {/* Info Card */}
+              <div className="card shadow mb-4">
+                <div className="card-header bg-success text-white">
+                  <h5 className="mb-0">
+                    <i className="bi bi-info-circle me-2"></i>
+                    Maklumat Pendaftaran & Pembayaran
+                  </h5>
+                </div>
+                <div className="card-body">
+                  <p className="mb-3">Assalamualaikum Kepada ahli Kariah Masjid BTHO</p>
 
-              <Link href="/khairat/daftar" className="btn btn-success btn-lg py-3">
-                <i className="bi bi-person-plus me-2"></i>
-                Daftar Ahli Baru
-                <br />
-                <small className="fw-normal">Mohon keahlian khairat</small>
-              </Link>
-            </div>
+                  <div className="mb-4">
+                    <h6 className="fw-bold text-success">
+                      <span className="badge bg-success me-2">1</span>
+                      Pendaftaran Ahli Baru
+                    </h6>
+                    <p className="mb-2">Sekiranya adalah ahli kariah Masjid BTHO dan belum lagi berdaftar menjadi ahli Badan Khairat Kematian Kariah Masjid BTHO (BKK), berdaftarlah dengan menghantar butiran berikut:</p>
+                    <ul className="list-unstyled ms-3">
+                      <li><i className="bi bi-dot"></i> Nama penuh: Suami, isteri, anak-anak yang belum berkeluarga</li>
+                      <li><i className="bi bi-dot"></i> No. KP: (Semua)</li>
+                      <li><i className="bi bi-dot"></i> Alamat email</li>
+                      <li><i className="bi bi-dot"></i> No. Tel</li>
+                      <li><i className="bi bi-dot"></i> Alamat rumah</li>
+                    </ul>
+                  </div>
 
-            <div className="mt-4 d-flex justify-content-center gap-3">
-              <Link href="/login" className="text-muted text-decoration-none">
-                <i className="bi bi-arrow-left me-1"></i>
-                Laman Utama
-              </Link>
-              <span className="text-muted">|</span>
-              <Link href="/help/public" className="text-muted text-decoration-none">
-                <i className="bi bi-question-circle me-1"></i>
-                Bantuan
-              </Link>
+                  <div className="mb-4">
+                    <h6 className="fw-bold text-success">
+                      <span className="badge bg-success me-2">2</span>
+                      Yuran Pendaftaran
+                    </h6>
+                    <p className="mb-2">Sila masukkan sejumlah <strong>RM70.00</strong> secara online ke akaun BKK seperti di bawah:</p>
+                    <ul className="list-unstyled ms-3">
+                      <li><i className="bi bi-check-circle text-success me-1"></i> RM10 - Yuran pendaftaran</li>
+                      <li><i className="bi bi-check-circle text-success me-1"></i> RM60 - Yuran tahunan</li>
+                    </ul>
+                    <p className="text-muted small mb-0">
+                      <i className="bi bi-info-circle me-1"></i>
+                      Nyatakan dalam recipient reference: <strong>nama / Yuran BKK</strong>
+                    </p>
+                  </div>
+
+                  <div className="mb-4">
+                    <h6 className="fw-bold text-success">
+                      <span className="badge bg-success me-2">3</span>
+                      Bayaran Yuran Tahunan (Ahli Sedia Ada)
+                    </h6>
+                    <p className="mb-0">Kepada ahli yang sudah berdaftar dan ingin membayar Yuran Tahunan, bolehlah membuat bayaran terus secara online kepada akaun di bawah.</p>
+                  </div>
+
+                  {/* Bank Info */}
+                  <div className="card bg-primary bg-opacity-10 border-primary mb-4">
+                    <div className="card-body">
+                      <h6 className="card-title text-primary">
+                        <i className="bi bi-bank me-2"></i>
+                        Maklumat Akaun Bank
+                      </h6>
+                      <table className="table table-borderless mb-0">
+                        <tbody>
+                          <tr>
+                            <td className="text-muted" style={{ width: '35%' }}>Nama Akaun</td>
+                            <td className="fw-bold">Badan Khairat Kematian BTHO</td>
+                          </tr>
+                          <tr>
+                            <td className="text-muted">Bank</td>
+                            <td className="fw-bold">Bank Muamalat</td>
+                          </tr>
+                          <tr>
+                            <td className="text-muted">No. Akaun</td>
+                            <td className="fw-bold font-monospace fs-5">1207 0002 1757 19</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* WhatsApp Link */}
+                  <div className="card bg-success bg-opacity-10 border-success">
+                    <div className="card-body text-center">
+                      <p className="mb-3">Sila majukan butiran pendaftaran beserta dengan bukti pembayaran kepada:</p>
+                      <a
+                        href="https://wa.me/60122676323"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-success btn-lg"
+                      >
+                        <i className="bi bi-whatsapp me-2"></i>
+                        Hubungi SU BKK
+                      </a>
+                      <p className="text-muted small mt-2 mb-0">SU BKK Kariah Masjid BTHO</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="card shadow mb-4">
+                <div className="card-body">
+                  <div className="d-grid gap-3">
+                    <button
+                      className="btn btn-primary btn-lg py-3"
+                      onClick={() => setMode('search')}
+                    >
+                      <i className="bi bi-search me-2"></i>
+                      Semak Status Keahlian
+                      <br />
+                      <small className="fw-normal">Cari menggunakan No. K/P</small>
+                    </button>
+
+                    <Link href="/khairat/daftar" className="btn btn-success btn-lg py-3">
+                      <i className="bi bi-person-plus me-2"></i>
+                      Daftar Ahli Baru
+                      <br />
+                      <small className="fw-normal">Mohon keahlian khairat</small>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Links */}
+              <div className="text-center">
+                <Link href="/login" className="text-muted text-decoration-none me-3">
+                  <i className="bi bi-arrow-left me-1"></i>
+                  Laman Utama
+                </Link>
+                <span className="text-muted">|</span>
+                <Link href="/help/public" className="text-muted text-decoration-none ms-3">
+                  <i className="bi bi-question-circle me-1"></i>
+                  Bantuan
+                </Link>
+              </div>
             </div>
           </div>
         </div>
