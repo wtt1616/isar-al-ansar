@@ -10,7 +10,9 @@ export type FieldType =
   | 'multiselect'
   | 'date'
   | 'time'
-  | 'file';
+  | 'file'
+  | 'heading'
+  | 'paragraph';
 
 export interface FormField {
   id: string;
@@ -41,6 +43,22 @@ export interface FieldTypeConfig {
 }
 
 export const FIELD_TYPES: FieldTypeConfig[] = [
+  {
+    type: 'heading',
+    label: 'Tajuk Seksyen',
+    icon: 'bi-type-h1',
+    description: 'Tajuk atau heading untuk bahagian borang',
+    hasOptions: false,
+    defaultPlaceholder: 'Tajuk Seksyen'
+  },
+  {
+    type: 'paragraph',
+    label: 'Keterangan',
+    icon: 'bi-text-left',
+    description: 'Teks penerangan atau arahan kepada pengguna',
+    hasOptions: false,
+    defaultPlaceholder: 'Masukkan keterangan atau arahan di sini...'
+  },
   {
     type: 'text',
     label: 'Teks',

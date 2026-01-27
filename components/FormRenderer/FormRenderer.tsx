@@ -87,6 +87,11 @@ export default function FormRenderer({ formId, title, description, fields, onSuc
     const newErrors: Record<string, string> = {};
 
     fields.forEach(field => {
+      // Skip validation for display-only fields
+      if (field.type === 'heading' || field.type === 'paragraph') {
+        return;
+      }
+
       const value = formData[field.id];
 
       // Required check
@@ -243,11 +248,13 @@ export default function FormRenderer({ formId, title, description, fields, onSuc
       )}
 
       {fields.map((field) => (
-        <div key={field.id} className="mb-3">
-          <label className="form-label">
-            {field.label}
-            {field.required && <span className="text-danger ms-1">*</span>}
-          </label>
+        <div key={field.id} className={field.type === 'heading' ? 'mb-2 mt-4' : 'mb-3'}>
+          {field.type !== 'heading' && field.type !== 'paragraph' && (
+            <label className="form-label">
+              {field.label}
+              {field.required && <span className="text-danger ms-1">*</span>}
+            </label>
+          )}
 
           {renderField(field, formData[field.id], (value) => handleChange(field.id, value), (option, checked) => handleCheckboxChange(field.id, option, checked), (file) => handleFileChange(field.id, file, field))}
 
@@ -288,6 +295,20 @@ function renderField(
   onFileChange: (file: File | null) => void
 ) {
   switch (field.type) {
+    case 'heading':
+      return (
+        <div className="border-bottom pb-2">
+          <h5 className="mb-0 text-primary">{field.placeholder || field.label}</h5>
+        </div>
+      );
+
+    case 'paragraph':
+      return (
+        <div className="text-muted">
+          {field.placeholder || field.label}
+        </div>
+      );
+
     case 'text':
       return (
         <input

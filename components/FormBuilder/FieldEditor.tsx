@@ -64,8 +64,34 @@ export default function FieldEditor({ field, onUpdate, onClose }: FieldEditorPro
           />
         </div>
 
-        {/* Placeholder */}
-        {!['checkbox', 'radio', 'date', 'time', 'file'].includes(field.type) && (
+        {/* Content for heading and paragraph */}
+        {['heading', 'paragraph'].includes(field.type) && (
+          <div className="mb-3">
+            <label className="form-label small fw-medium">
+              {field.type === 'heading' ? 'Teks Tajuk' : 'Teks Keterangan'}
+            </label>
+            {field.type === 'heading' ? (
+              <input
+                type="text"
+                className="form-control form-control-sm"
+                value={editedField.placeholder || ''}
+                onChange={(e) => handleChange('placeholder', e.target.value)}
+                placeholder="Masukkan tajuk seksyen..."
+              />
+            ) : (
+              <textarea
+                className="form-control form-control-sm"
+                rows={4}
+                value={editedField.placeholder || ''}
+                onChange={(e) => handleChange('placeholder', e.target.value)}
+                placeholder="Masukkan keterangan atau arahan..."
+              ></textarea>
+            )}
+          </div>
+        )}
+
+        {/* Placeholder for input fields */}
+        {!['checkbox', 'radio', 'date', 'time', 'file', 'heading', 'paragraph'].includes(field.type) && (
           <div className="mb-3">
             <label className="form-label small fw-medium">Placeholder</label>
             <input
@@ -78,21 +104,23 @@ export default function FieldEditor({ field, onUpdate, onClose }: FieldEditorPro
           </div>
         )}
 
-        {/* Required */}
-        <div className="mb-3">
-          <div className="form-check form-switch">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id="fieldRequired"
-              checked={editedField.required}
-              onChange={(e) => handleChange('required', e.target.checked)}
-            />
-            <label className="form-check-label small" htmlFor="fieldRequired">
-              Wajib diisi
-            </label>
+        {/* Required - not for heading/paragraph */}
+        {!['heading', 'paragraph'].includes(field.type) && (
+          <div className="mb-3">
+            <div className="form-check form-switch">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="fieldRequired"
+                checked={editedField.required}
+                onChange={(e) => handleChange('required', e.target.checked)}
+              />
+              <label className="form-check-label small" htmlFor="fieldRequired">
+                Wajib diisi
+              </label>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Options (for dropdown, radio, checkbox, multiselect) */}
         {fieldConfig?.hasOptions && (

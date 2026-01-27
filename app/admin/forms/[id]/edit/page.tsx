@@ -276,10 +276,12 @@ export default function EditFormPage() {
                 <form>
                   {fields.map((field) => (
                     <div key={field.id} className="mb-3">
-                      <label className="form-label">
-                        {field.label}
-                        {field.required && <span className="text-danger ms-1">*</span>}
-                      </label>
+                      {field.type !== 'heading' && field.type !== 'paragraph' && (
+                        <label className="form-label">
+                          {field.label}
+                          {field.required && <span className="text-danger ms-1">*</span>}
+                        </label>
+                      )}
                       {renderFormField(field)}
                     </div>
                   ))}
@@ -300,6 +302,18 @@ export default function EditFormPage() {
 
 function renderFormField(field: FormField) {
   switch (field.type) {
+    case 'heading':
+      return (
+        <div className="border-bottom pb-2 mb-2">
+          <h5 className="mb-0 text-primary">{field.placeholder || 'Tajuk Seksyen'}</h5>
+        </div>
+      );
+    case 'paragraph':
+      return (
+        <div className="text-muted">
+          {field.placeholder || 'Keterangan atau arahan...'}
+        </div>
+      );
     case 'text':
     case 'email':
     case 'phone':

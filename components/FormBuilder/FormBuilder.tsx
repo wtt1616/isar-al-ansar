@@ -100,6 +100,18 @@ export default function FormBuilder({ fields, onChange }: FormBuilderProps) {
 
   const renderFieldPreview = (field: FormField) => {
     switch (field.type) {
+      case 'heading':
+        return (
+          <div className="border-bottom pb-2">
+            <h5 className="mb-0 text-primary">{field.placeholder || 'Tajuk Seksyen'}</h5>
+          </div>
+        );
+      case 'paragraph':
+        return (
+          <div className="bg-light p-2 rounded small text-muted">
+            {field.placeholder || 'Keterangan atau arahan akan dipaparkan di sini...'}
+          </div>
+        );
       case 'text':
       case 'email':
       case 'phone':
