@@ -359,7 +359,7 @@ export default function AdminKhairatPage() {
             <i className="bi bi-cloud-upload me-2"></i>
             Muat Naik Data Excel
           </Link>
-          <Link href="/khairat" target="_blank" className="btn btn-outline-primary">
+          <Link href="/forms/khairat-kematian" target="_blank" className="btn btn-outline-primary">
             <i className="bi bi-box-arrow-up-right me-2"></i>
             Lihat Borang Awam
           </Link>
