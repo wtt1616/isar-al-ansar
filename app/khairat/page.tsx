@@ -367,30 +367,6 @@ export default function KhairatPublicPage() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="card shadow mb-4">
-                <div className="card-body">
-                  <div className="d-grid gap-3">
-                    <button
-                      className="btn btn-primary btn-lg py-3"
-                      onClick={() => setMode('search')}
-                    >
-                      <i className="bi bi-search me-2"></i>
-                      Semak Status Keahlian
-                      <br />
-                      <small className="fw-normal">Cari menggunakan No. K/P</small>
-                    </button>
-
-                    <Link href="/khairat/daftar" className="btn btn-success btn-lg py-3">
-                      <i className="bi bi-person-plus me-2"></i>
-                      Daftar Ahli Baru
-                      <br />
-                      <small className="fw-normal">Mohon keahlian khairat</small>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
               {/* Footer Links */}
               <div className="text-center">
                 <Link href="/login" className="text-muted text-decoration-none me-3">
